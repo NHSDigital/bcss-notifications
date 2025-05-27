@@ -116,3 +116,51 @@ resource "aws_lambda_permission" "allow_sqs_to_call_lambda" {
   principal     = "sqs.amazonaws.com"
   source_arn    = var.sqs_queue_arn
 }
+
+resource "null_resource" "healthcheck_lambda_zip" {
+  provisioner "local-exec" {
+    command     = "./build.sh healthcheck"
+    working_dir = path.module
+  }
+  triggers = {
+    always_run = local.build_trigger
+  }
+}
+
+resource "aws_lambda_function" "healthcheck" {
+  depends_on       = [null_resource.healthcheck_lambda_zip]
+  filename         = "${path.module}/healthcheck.zip"
+  function_name    = "${var.team}-${var.project}-healthcheck-${var.environment}"
+  handler          = "lambda_function.lambda_handler"
+  memory_size      = 128
+  role             = var.healthcheck_lambda_role_arn
+  runtime          = local.runtime
+  source_code_hash = local.build_trigger
+  timeout          = 300
+
+  vpc_config {
+    subnet_ids         = var.subnet_ids
+    security_group_ids = [var.security_group]
+  }
+
+  layers = [
+    var.parameters_and_secrets_lambda_extension_arn,
+    var.python_packages_layer_arn
+  ]
+
+  environment {
+    variables = {
+      COMMGT_BASE_URL = local.secrets["commgt_base_url"]
+      DATABASE_PORT   = local.secrets["database_port"]
+      ENVIRONMENT     = var.environment
+      OAUTH_TOKEN_URL = local.secrets["oauth_token_url"]
+      REGION_NAME     = var.region
+      SECRET_ARN      = var.secrets_arn
+
+      PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED = "true"
+      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "debug"
+    }
+  }
+
+  tags = var.tags
+}

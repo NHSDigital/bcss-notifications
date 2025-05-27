@@ -26,6 +26,7 @@ module "lambdas" {
 
   batch_notification_processor_lambda_role_arn = module.iam.batch_notification_processor_lambda_role_arn
   message_status_handler_lambda_role_arn       = module.iam.message_status_handler_lambda_role_arn
+  healthcheck_lambda_role_arn                  = module.iam.healthcheck_lambda_role_arn
   python_packages_layer_arn                    = module.lambda_layer.python_packages_layer_arn
 }
 
