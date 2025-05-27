@@ -11,16 +11,17 @@ The names of the functions are a work in progress. They are described below:
 
 ### Batch Notification Processor
 
-This function calls the BCSS Oracle database to obtain a batch of recipients eligible for pre-invitation notifications.
-The function schedules a second function which performs a status check on notifications sent for the batch.
+This function calls the BCSS Oracle database to obtain batches of recipients eligible for pre-invitation notifications.
+There are currently two message definitions with corresponding notification templates designed specifically for recipients who have had a previous cancer diagnosis and for recipients with no previous diagnosis.
+The batch notification processor lambda is scheduled for 08:00 and 09:00 every day. Each invocation will loop through all available batches of recipients until there are no more to process.
 
 
 ### Message Status Handler
 
-This function checks the status of notification from the batch and is scheduled by the function.
-This function is only scheduled if the batch processor function has successfully sent a batch to Communication Management API via the message batch endpoin.
+This function checks the status of notifications via the Communication Management API.
+It does this by fetching the batch IDs of successfully sent batches which are stored in BCSS Oracle and then fetching the message IDs of notifications delivered and read via the NHS App.
 It updates the status of a batch of pre-invitations in the BCSS Oracle database.
-Currently the only status we update in Oracle is if the message has been read on the `nhsapp` channel within the last 24 hours.
+
 
 ## Development setup
 
