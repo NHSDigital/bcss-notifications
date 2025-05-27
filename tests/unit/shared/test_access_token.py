@@ -6,7 +6,7 @@ import cryptography.hazmat.primitives.asymmetric.rsa as rsa
 from cryptography.hazmat.primitives import serialization
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def setup(monkeypatch):
     """Set up environment variables and private key for tests."""
     monkeypatch.setenv("OAUTH_TOKEN_URL", "http://tokens.example.com")
@@ -24,7 +24,7 @@ def setup(monkeypatch):
     monkeypatch.setenv("PRIVATE_KEY", private_key_pem)
 
 
-def test_get_token_successful_response(setup):
+def test_get_token_successful_response():
     """Test that a valid response returns the expected access token."""
     with requests_mock.Mocker() as mock:
         mock.post(
@@ -36,7 +36,7 @@ def test_get_token_successful_response(setup):
         assert token == "an_access_token"
 
 
-def test_get_token_error_response(setup, mocker):
+def test_get_token_error_response(mocker):
     """Test that an error response results in an empty token and logs errors."""
     error_logging_spy = mocker.spy(logging, "error")
 
