@@ -7,9 +7,13 @@ data "aws_subnets" "private" {
     name   = "vpc-id"
     values = [data.aws_vpc.selected.id]
   }
+
+  tags = {
+    "Name" = "*private*"
+  }
 }
 
 data "aws_security_group" "lambda" {
-  name = "bcss-oracle-bcss-dev-sec-grp"
+  name = "bcss-notify-lambdas"
 }
 
