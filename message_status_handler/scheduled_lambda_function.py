@@ -1,4 +1,4 @@
-import comms_management
+import communication_management
 import environment
 import json
 import logging as pylogging
@@ -19,7 +19,7 @@ def lambda_handler(_event: Any, _context: Any) -> Dict[str, Any]:
         batch_ids = batch_fetcher.fetch_batch_ids()
         for batch_id in batch_ids:
             results[batch_id] = {}
-            messages_with_read_status = comms_management.get_read_messages(batch_id)
+            messages_with_read_status = communication_management.get_read_messages(batch_id)
             logging.info(
                 "Processing %s messages with read status for batch_id: %s", 
                 len(messages_with_read_status),
