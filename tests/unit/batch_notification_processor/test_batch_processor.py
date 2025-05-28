@@ -20,8 +20,8 @@ def plan_id():
 @pytest.fixture
 def recipients():
     return [
-        Recipient(("0000000000", None, None, None, "requested")),
-        Recipient(("1111111111", None, None, None, "requested")),
+        Recipient("0000000000", None, None, None, "requested"),
+        Recipient("1111111111", None, None, None, "requested"),
     ]
 
 

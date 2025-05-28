@@ -25,8 +25,8 @@ def test_send_batch_message(mock_get_token):
             "batch_id",
             "routing_config_id",
             [
-                Recipient(("0000000000", "message_reference_0", "requested")),
-                Recipient(("1111111111", "message_reference_1", "requested")),
+                Recipient("0000000000", "message_reference_0", "requested"),
+                Recipient("1111111111", "message_reference_1", "requested"),
             ]
         )
         assert adapter.last_request.url == "http://example.com/message/batch"
@@ -57,8 +57,8 @@ def test_send_batch_message(mock_get_token):
 
 def test_generate_batch_message_request_body():
     recipients = [
-        Recipient(("0000000000", "message_reference_0", "requested")),
-        Recipient(("1111111111", "message_reference_1", "requested")),
+        Recipient("0000000000", "message_reference_0", "requested"),
+        Recipient("1111111111", "message_reference_1", "requested"),
     ]
 
     message_batch = communication_management.generate_batch_message_request_body("routing_config_id", "batch_reference", recipients)
@@ -73,7 +73,7 @@ def test_generate_batch_message_request_body():
 
 
 def test_generate_message():
-    recipient = Recipient(("0000000000", "message_reference_0", "requested"))
+    recipient = Recipient("0000000000", "message_reference_0", "requested")
 
     message = communication_management.generate_message(recipient)
 
