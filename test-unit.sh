@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pytest --cov=src tests/unit || {
+poetry run pytest --cov=src tests/unit || {
     echo "Tests failed in tests/unit"
     exit 1
 }
