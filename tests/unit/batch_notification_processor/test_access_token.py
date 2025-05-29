@@ -9,9 +9,9 @@ from cryptography.hazmat.primitives import serialization
 @pytest.fixture
 def setup(monkeypatch):
     """Set up environment variables and private key for tests."""
-    monkeypatch.setenv("OAUTH2_TOKEN_URL", "http://tokens.example.com")
-    monkeypatch.setenv("OAUTH2_API_KEY", "an_api_key")
-    monkeypatch.setenv("OAUTH2_API_KID", "a_kid")
+    monkeypatch.setenv("OAUTH_TOKEN_URL", "http://tokens.example.com")
+    monkeypatch.setenv("OAUTH_API_KEY", "an_api_key")
+    monkeypatch.setenv("OAUTH_API_KID", "a_kid")
     private_key = rsa.generate_private_key(
         public_exponent=65537,
         key_size=2048

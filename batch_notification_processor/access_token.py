@@ -12,7 +12,7 @@ EXPIRES_IN_MINUTES = 5
 
 
 def get_token() -> str:
-    if not os.getenv("OAUTH2_API_KEY"):
+    if not os.getenv("OAUTH_API_KEY"):
         return "awaiting-token"
 
     auth_jwt: str = generate_auth_jwt()
@@ -25,7 +25,7 @@ def get_token() -> str:
     }
 
     response = requests.post(
-        str(os.getenv("OAUTH2_TOKEN_URL")),
+        str(os.getenv("OAUTH_TOKEN_URL")),
         data=body,
         headers=headers,
         timeout=10,
@@ -48,15 +48,15 @@ def generate_auth_jwt() -> str:
     headers: dict = {
         "alg": algorithm,
         "typ": "JWT",
-        "kid": os.getenv("OAUTH2_API_KID")
+        "kid": os.getenv("OAUTH_API_KID")
     }
-    api_key: str | None = os.getenv("OAUTH2_API_KEY")
+    api_key: str | None = os.getenv("OAUTH_API_KEY")
 
     payload: dict = {
         "sub": api_key,
         "iss": api_key,
         "jti": str(uuid.uuid4()),
-        "aud": os.getenv("OAUTH2_TOKEN_URL"),
+        "aud": os.getenv("OAUTH_TOKEN_URL"),
         "exp": int(time.time()) + (EXPIRES_IN_MINUTES * 60),
     }
 
