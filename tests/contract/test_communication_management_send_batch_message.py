@@ -1,23 +1,24 @@
 from pact import Consumer, Provider, Term
 from pact.matchers import get_generated_values
 import pytest
-from communication_management import CommunicationManagement
+import communication_management
 from recipient import Recipient
+
 
 @pytest.fixture
 def send_batch_pact():
-  pact = Consumer("MessageStatusHandler").has_pact_with(
-      Provider("CommunicationManagement"),
-      pact_dir="tests/contract/pacts",
-  )
-  pact.start_service()
-  yield pact
-  pact.stop_service()
+    pact = Consumer("MessageStatusHandler").has_pact_with(
+        Provider("CommunicationManagement"),
+        pact_dir="tests/contract/pacts",
+    )
+    pact.start_service()
+    yield pact
+    pact.stop_service()
+
 
 def test_send_batch_message(send_batch_pact, monkeypatch):
-    comms_management = CommunicationManagement()
-    comms_management.base_url = send_batch_pact.uri
-    comms_management.api_key = "test_api_key"
+    monkeypatch.setenv("COMMGT_BASE_URL", send_batch_pact.uri)
+    monkeypatch.setenv("API_KEY", "test_api_key")
 
     expected_reponse = {
                 "data": {
@@ -47,16 +48,13 @@ def test_send_batch_message(send_batch_pact, monkeypatch):
                 },
             }
 
-    endpoint = "/message/batch"
-    uri = send_batch_pact.uri + endpoint
-
     (send_batch_pact.given("There are messages to send")
         .upon_receiving("A request to send a batch message")
         .with_request("POST", "/message/batch")
         .will_respond_with(201, body=expected_reponse))
 
     with send_batch_pact:
-        response = comms_management.send_batch_message(
+        response = communication_management.send_batch_message(
             batch_id="da0b1495-c7cb-468c-9d81-07dee089d728",
             routing_config_id="2HL3qFTEFM0qMY8xjRbt1LIKCzM",
             recipients=[

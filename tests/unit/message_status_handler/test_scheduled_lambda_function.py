@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 
 @patch("batch_fetcher.fetch_batch_ids")
-@patch("comms_management.get_read_messages")
+@patch("communication_management.get_read_messages")
 @patch("message_status_recorder.record_message_statuses")
 def test_lambda_handler(mock_record_message_statuses, mock_get_read_messages, mock_fetch_batch_ids):
     mock_fetch_batch_ids.return_value = ["12345"]
@@ -26,7 +26,7 @@ def test_lambda_handler(mock_record_message_statuses, mock_get_read_messages, mo
 
 
 @patch("batch_fetcher.fetch_batch_ids")
-@patch("comms_management.get_read_messages")
+@patch("communication_management.get_read_messages")
 def test_lambda_handler_no_messages(mock_get_read_messages, mock_fetch_batch_ids):
     mock_fetch_batch_ids.return_value = ["12345"]
     mock_get_read_messages.return_value = []
@@ -45,7 +45,7 @@ def test_lambda_handler_no_messages(mock_get_read_messages, mock_fetch_batch_ids
 
 
 @patch("batch_fetcher.fetch_batch_ids")
-@patch("comms_management.get_read_messages")
+@patch("communication_management.get_read_messages")
 def test_lambda_handler_exception(mock_get_read_messages, mock_fetch_batch_ids):
     mock_fetch_batch_ids.return_value = ["12345"]
     mock_get_read_messages.side_effect = Exception("Test exception")
@@ -57,7 +57,7 @@ def test_lambda_handler_exception(mock_get_read_messages, mock_fetch_batch_ids):
 
 
 @patch("batch_fetcher.fetch_batch_ids")
-@patch("comms_management.get_read_messages")
+@patch("communication_management.get_read_messages")
 @patch("message_status_recorder.record_message_statuses")
 def test_lambda_handler_with_bcss_error(mock_record_message_statuses, mock_get_read_messages, mock_fetch_batch_ids):
     mock_fetch_batch_ids.return_value = ["12345"]

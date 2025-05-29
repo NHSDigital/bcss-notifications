@@ -1,7 +1,8 @@
 from pact import Consumer, Provider, Term
 from pact.matchers import get_generated_values
 import pytest
-from comms_management import get_read_messages
+from communication_management import get_read_messages
+
 
 @pytest.fixture
 def get_statuses_pact():

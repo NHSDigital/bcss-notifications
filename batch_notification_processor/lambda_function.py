@@ -4,7 +4,7 @@ import batch_processor
 import environment
 import logging as pylogging
 import os
-from communication_management import CommunicationManagement
+import communication_management
 
 logging = pylogging.getLogger()
 logging.setLevel(os.getenv("LOG_LEVEL", "INFO"))
@@ -24,7 +24,7 @@ def lambda_handler(_event: dict, _context: object) -> dict:
     while routing_plan_id and recipients:
         logging.info("Batch ID: %s, Routing plan ID: %s, Recipients: %s", batch_id, routing_plan_id, recipients)
 
-        response = CommunicationManagement().send_batch_message(
+        response = communication_management.send_batch_message(
             batch_id, routing_plan_id, recipients
         )
 

@@ -45,9 +45,10 @@ def get_recipients(batch_id):
     except oracledb.Error as e:
         logging.error("Error fetching recipients: %s", e)
 
-    for recipient in recipients:
-        recipient.message_id = generate_message_reference()
+    for idx, recipient in enumerate(recipients):
+        recipient = recipient._replace(message_id=generate_message_reference())
         oracle_database.update_message_id(recipient)
+        recipients[idx] = recipient
 
     return recipients
 
@@ -64,6 +65,6 @@ def generate_message_reference() -> str:
     return generate_reference("bcss_notify_message_reference")
 
 
-def generate_reference(prefix = "") -> str:
+def generate_reference(prefix="") -> str:
     str_val = f"{prefix}:{time.time()}"
     return str(uuid.UUID(hashlib.md5(str_val.encode()).hexdigest()))

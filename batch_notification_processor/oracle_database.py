@@ -29,7 +29,7 @@ def get_recipients(batch_id: str) -> list[Recipient]:
         except oracledb.Error as e:
             logging.error("Error executing query: %s", e)
 
-    return [Recipient(rd) for rd in recipient_data]
+    return [Recipient(*rd) for rd in recipient_data]
 
 
 def mark_batch_as_sent(batch_id: str):

@@ -38,8 +38,8 @@ def test_get_routing_plan_id(mock_database):
 @patch("oracle_database.database", autospec=True)
 def test_get_recipients(mock_database):
     raw_recipient_data = [
-        ("1111111111", "message_reference_1"),
-        ("2222222222", "message_reference_2"),
+        ("1111111111", "message_reference_1",),
+        ("2222222222", "message_reference_2",),
     ]
 
     mock_cursor = mock_database.cursor().__enter__()
@@ -63,7 +63,7 @@ def test_get_recipients(mock_database):
 
 @patch("oracle_database.database", autospec=True)
 def test_update_message_id(mock_database):
-    recipient = Recipient(("1111111111", "message_reference_1"))
+    recipient = Recipient("1111111111", "message_reference_1")
 
     mock_cursor = mock_database.cursor().__enter__()
 
