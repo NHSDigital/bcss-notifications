@@ -37,7 +37,7 @@ Dependencies are managed using poetry. To install the dependencies and use the v
 
 ```bash
 pip install poetry
-poetry install --no-root --only dev
+poetry install --no-root
 ```
 
 ### Environment variables

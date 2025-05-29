@@ -11,7 +11,6 @@ jobs:
   unit-testing:
     name: "Unit tests"
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     steps:
       - name: "Install Python"
         uses: actions/setup-python@v5
@@ -95,7 +94,7 @@ jobs:
     name: "End to end tests"
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    steps:
+    steps:1
       - name: "Install Python"
         uses: actions/setup-python@v4
         with:
@@ -107,7 +106,6 @@ jobs:
       - name: "Install dependencies"
         run: |
           pip install poetry
-          poetry env use system
           poetry install --no-root
 
       - name: "Run end to end tests"
