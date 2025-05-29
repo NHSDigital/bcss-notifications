@@ -1,9 +1,9 @@
 #!/bin/bash
 
 mkdir -p build/python
-pip install pipenv
-pipenv requirements > requirements.txt
-pipenv run pip install -r requirements.txt --target build/python/
+pip install poetry
+poetry export -f requirements.txt --without-hashes > requirement.txt
+poetry run pip install -r requirements.txt --target build/python/
 rm requirements.txt
 cd build/python
 find -name "tests" -type d | xargs rm -rf

@@ -32,12 +32,11 @@ Currently the only status we update in Oracle is if the message has been read on
 
 ### Setup
 
-Dependencies are managed using pipenv. To install the dependencies and activate the virtual environment, run:
+Dependencies are managed using poetry. To install the dependencies and use the virtual environment, run:
 
 ```bash
-pip install pipenv
-pipenv install --dev
-pipenv shell
+pip install poetry
+poetry install --no-root --only dev
 ```
 
 ### Environment variables
