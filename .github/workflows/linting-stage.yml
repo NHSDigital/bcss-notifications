@@ -8,34 +8,23 @@ on:
     types: [opened, reopened]
 
 jobs:
-  set-up-dependencies:
-    name: "Set up dependencies"
+  linting:
+    name: "linting"
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: "Install Python"
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13"
 
-      - name: Install dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          python -m pip install --upgrade pip
-
-  linting:
-    name: "linting"
-    needs: set-up-dependencies
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
 
       - name: "Install dependencies"
         run: |
-          pip install pipenv
-          pipenv install --dev --system
+          pip install poetry
+          poetry install --no-root
 
       - name: "Lint Python files:"
         run: |
