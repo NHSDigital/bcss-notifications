@@ -1,11 +1,12 @@
-FROM public.ecr.aws/lambda/python:3.12
+FROM public.ecr.aws/lambda/python:3.13
 
-COPY --from=root_dir Pipfile ${LAMBDA_TASK_ROOT}
-COPY --from=root_dir Pipfile.lock ${LAMBDA_TASK_ROOT}
+COPY --from=root_dir pyproject.toml ${LAMBDA_TASK_ROOT}
+COPY --from=root_dir poetry.lock ${LAMBDA_TASK_ROOT}
 COPY --from=root_dir shared/*.py ${LAMBDA_TASK_ROOT}
 COPY *.py ${LAMBDA_TASK_ROOT}
 
-RUN pip install pipenv
-RUN pipenv install --system
+RUN pip install poetry
+RUN poetry config virtualenvs.create false
+RUN poetry install --no-root
 
 CMD [ "scheduled_lambda_function.lambda_handler" ]

@@ -6,13 +6,13 @@ WORKDIR /dependencies
 ENV PIPENV_VENV_IN_PROJECT=1
 
 COPY --from=root_dir .env.test /.env
-COPY --from=root_dir Pipfile /
-COPY --from=root_dir Pipfile.lock /
+COPY --from=root_dir pyproject.toml /
+COPY --from=root_dir poetry.lock /
 
-RUN pip install pipenv
-RUN pipenv install
+RUN pip install poetry
+RUN poetry install --no-root
 RUN mkdir -p ./artefacts/
-RUN cp -r $(pipenv --venv)/lib/python3.13/site-packages/* ./artefacts/
+RUN cp -r $(poetry env info --path)/lib/python3.13/site-packages/* ./artefacts/
 
 WORKDIR /dependencies/artefacts
 

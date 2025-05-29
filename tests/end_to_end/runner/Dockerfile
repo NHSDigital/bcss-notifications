@@ -17,10 +17,11 @@ ENV API_KEY=${API_KEY} \
     REGION_NAME=${REGION_NAME} \
     SCHEDULE_STATUS_CHECK_MINUTES=${SCHEDULE_STATUS_CHECK_MINUTES}
 
-COPY --from=root_dir Pipfile /
-COPY --from=root_dir Pipfile.lock /
+COPY --from=root_dir pyproject.toml /
+COPY --from=root_dir poetry.lock /
 COPY --from=root_dir .env.test /.env
 COPY . /tests/end_to_end
 
-RUN pip install pipenv
-RUN pipenv install --dev --system
+RUN pip install poetry
+RUN poetry config virtualenvs.create false
+RUN poetry install --no-root
