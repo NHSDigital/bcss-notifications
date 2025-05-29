@@ -94,7 +94,7 @@ jobs:
     name: "End to end tests"
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    steps:1
+    steps:
       - name: "Install Python"
         uses: actions/setup-python@v4
         with:
