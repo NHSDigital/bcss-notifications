@@ -31,7 +31,12 @@ variable "batch_notification_processor_lambda_role_arn" {
 
 variable "message_status_handler_lambda_role_arn" {
   type        = string
-  description = "ARN for the batch processor lambda role"
+  description = "ARN for the message status handler lambda role"
+}
+
+variable "healthcheck_lambda_role_arn" {
+  type        = string
+  description = "ARN for the healthcheck lambda role"
 }
 
 variable "parameters_and_secrets_lambda_extension_arn" {

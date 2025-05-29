@@ -6,3 +6,6 @@ output "message_status_handler_lambda_role_arn" {
   value = aws_iam_role.message_status_handler_lambda_role.arn
 }
 
+output "healthcheck_lambda_role_arn" {
+  value = aws_iam_role.healthcheck_lambda_role.arn
+}
