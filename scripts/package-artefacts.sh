@@ -7,13 +7,13 @@ DOCKERFILE=create-artefacts.dockerfile
 PROJECT_DIR="$(realpath "$(dirname "$0")/..")"
 LIB_DIR="$PROJECT_DIR/artefacts"
 
-# Check if the Pipfile exists in the project directory
-if [ ! -f "$PROJECT_DIR/Pipfile" ]; then
-  echo "Error: Pipfile does not exist in the project directory."
+# Check if the pyproject.toml exists in the project directory
+if [ ! -f "$PROJECT_DIR/pyproject.toml" ]; then
+  echo "Error: pyproject.toml does not exist in the project directory."
   exit 1
 fi
 
-echo "Pipfile found at $"
+echo "pyproject.toml found at $"
 
 # Pull the official Python 3.13 image for linux/amd64
 docker build -f $DOCKERFILE --target export --output type=local,dest=./artefacts .

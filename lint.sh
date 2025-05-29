@@ -1,4 +1,4 @@
-pylint $(git ls-files '*.py' | grep -v '^tests/') || {
+poetry run pylint $(git ls-files '*.py' | grep -v '^tests/') || {
   echo "Pylint failed"
   exit 1
 }
