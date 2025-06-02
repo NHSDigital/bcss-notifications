@@ -14,8 +14,8 @@ on:
       - "batch_notification_processor/**"
       - "message_status_handler/**"
       - "shared/**"
-      - "Pipfile"
-      - "Pipfile.lock"
+      - "pyproject.toml"
+      - "poetry.lock"
     branches: [main]
 
 jobs:
@@ -42,10 +42,11 @@ jobs:
         uses: montudor/action-zip@v1
       - name: Create zip file for packages layer
         run: |
-          pip install pipenv
+          pip install poetry
           mkdir -p python
-          pipenv requirements > requirements.txt
-          pipenv run pip install -r requirements.txt --target python/
+          poetry env use system
+          poetry export --without-hashes --format=requirements.txt > requirements.txt
+          poetry run pip install -r requirements.txt --target python/
           cd python
           find -name "tests" -type d | xargs rm -rf
           find -name "__pycache__" -type d | xargs rm -rf

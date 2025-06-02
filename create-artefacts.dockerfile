@@ -4,12 +4,13 @@ FROM --platform=linux/amd64 python:3.13 AS builder
 ENV PIPENV_VENV_IN_PROJECT=1
 WORKDIR /tmp/project/app
 
-COPY Pipfile Pipfile.lock ./
+COPY pyproject.toml poetry.lock ./
 
-# Install dependencies (update pip, install pipenv, and install from Pipfile)
+# Install dependencies (update pip, install from poetry)
 RUN pip install --upgrade pip && \
-    pip install pipenv && \
-    pipenv install --deploy --ignore-pipfile
+    pip install poetry && \
+    poetry config virtualenvs.create false && \
+    poetry install --no-root
 
 # Assume the installed packages are in the .venv folder; copy them to an export folder
 RUN mkdir -p /artefacts/ && \

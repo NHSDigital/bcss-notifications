@@ -33,12 +33,11 @@ It updates the status of a batch of pre-invitations in the BCSS Oracle database.
 
 ### Setup
 
-Dependencies are managed using pipenv. To install the dependencies and activate the virtual environment, run:
+Dependencies are managed using poetry. To install the dependencies and use the virtual environment, run:
 
 ```bash
-pip install pipenv
-pipenv install --dev
-pipenv shell
+pip install poetry
+poetry install --no-root
 ```
 
 ### Environment variables

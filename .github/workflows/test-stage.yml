@@ -8,58 +8,49 @@ on:
     types: [opened, reopened]
 
 jobs:
-  set-up-dependencies:
-    name: "Set up dependencies"
+  unit-testing:
+    name: "Unit tests"
     runs-on: ubuntu-latest
     steps:
       - name: "Install Python"
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13"
 
-      - name: Install dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          python -m pip install --upgrade pip
-
-  unit-testing:
-    name: "Unit tests"
-    needs: set-up-dependencies
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
 
       - name: "Install dependencies"
         run: |
-          pip install pipenv
-          pipenv install --dev --system
+          pip install poetry
+          poetry install --no-root
 
       - name: "run unit testing:"
         run: |
           ./test-unit.sh
   contract-tests:
     name: "Contract tests"
-    needs: set-up-dependencies
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: "Install Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
       - name: "Checkout code"
         uses: actions/checkout@v4
 
       - name: "Install dependencies"
         run: |
-          pip install pipenv
-          pipenv install --dev --system
+          pip install poetry
+          poetry install --no-root
 
       - name: "Run contract tests"
         run: |
           ./test-contract.sh
   integration-tests:
     name: "Integration tests"
-    needs: set-up-dependencies
     runs-on: ubuntu-latest
     timeout-minutes: 5
     services:
@@ -78,6 +69,11 @@ jobs:
           --health-retries 10
           --name oracle
     steps:
+      - name: "Install Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
       - name: "Checkout code"
         uses: actions/checkout@v4
 
@@ -88,25 +84,29 @@ jobs:
 
       - name: "Install dependencies"
         run: |
-          pip install pipenv
-          pipenv install --dev --system
+          pip install poetry
+          poetry install --no-root
 
       - name: "Run integration tests"
         run: |
-          pytest tests/integration
+          poetry run pytest tests/integration
   end-to-end-tests:
     name: "End to end tests"
-    needs: set-up-dependencies
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: "Install Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
       - name: "Checkout code"
         uses: actions/checkout@v4
 
       - name: "Install dependencies"
         run: |
-          pip install pipenv
-          pipenv install --dev --system
+          pip install poetry
+          poetry install --no-root
 
       - name: "Run end to end tests"
         run: |
