@@ -1,18 +1,14 @@
 import communication_management
 import environment
 import json
-import logging as pylogging
-import os
+import logging
 import batch_fetcher
 import message_status_recorder
 from typing import Dict, Any
 
-logging = pylogging.getLogger()
-logging.setLevel(os.getenv("LOG_LEVEL", "INFO"))
-
 
 def lambda_handler(_event: Any, _context: Any) -> Dict[str, Any]:
-    logging.info("Message status handler started.")
+    logging.info("Message status handler lambda has started.")
     environment.seed()
     results = {}
     try:
@@ -31,11 +27,14 @@ def lambda_handler(_event: Any, _context: Any) -> Dict[str, Any]:
                 bcss_responses = message_status_recorder.record_message_statuses(batch_id, messages_with_read_status)
                 results[batch_id]["bcss_response"] = bcss_responses
 
+        logging.info("Message status handler lambda has finished.")
+        logging.info("Results: %s", results)
+
         return {
             "statusCode": 200,
             "body": json.dumps(
                 {
-                    "message": "Message status handler finished",
+                    "message": "Message status handler lambda finished",
                     "data": results,
                 }
             ),

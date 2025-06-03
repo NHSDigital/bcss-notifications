@@ -15,7 +15,7 @@ def test_lambda_handler(mock_record_message_statuses, mock_get_read_messages, mo
 
     assert response["statusCode"] == 200
     assert json.loads(response["body"]) == {
-        "message": "Message status handler finished",
+        "message": "Message status handler lambda finished",
         "data": {
             "12345": {
                 "notification_status": [{"message_id": "123", "status": "read"}],
@@ -35,7 +35,7 @@ def test_lambda_handler_no_messages(mock_get_read_messages, mock_fetch_batch_ids
 
     assert response["statusCode"] == 200
     assert json.loads(response["body"]) == {
-        "message": "Message status handler finished",
+        "message": "Message status handler lambda finished",
         "data": {
             "12345": {
                 "notification_status": [],
