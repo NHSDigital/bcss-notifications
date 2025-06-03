@@ -26,6 +26,11 @@ resource "aws_lambda_function" "batch_notification_processor" {
   source_code_hash = local.build_trigger
   timeout          = 300
 
+  logging_config {
+    application_log_level = "INFO"
+    log_format            = "JSON"
+  }
+
   vpc_config {
     subnet_ids         = var.subnet_ids
     security_group_ids = [var.security_group]
@@ -76,6 +81,11 @@ resource "aws_lambda_function" "message_status_handler" {
   runtime          = local.runtime
   source_code_hash = local.build_trigger
   timeout          = 300
+
+  logging_config {
+    application_log_level = "INFO"
+    log_format            = "JSON"
+  }
 
   vpc_config {
     subnet_ids         = var.subnet_ids
@@ -137,6 +147,11 @@ resource "aws_lambda_function" "healthcheck" {
   runtime          = local.runtime
   source_code_hash = local.build_trigger
   timeout          = 300
+
+  logging_config {
+    application_log_level = "INFO"
+    log_format            = "JSON"
+  }
 
   vpc_config {
     subnet_ids         = var.subnet_ids
