@@ -2,17 +2,14 @@
 import access_token
 import database
 import environment
-import logging as pylogging
+import logging
 import os
 import requests
-
-logging = pylogging.getLogger()
-logging.setLevel("INFO")
 
 
 def lambda_handler(_event, _context):
     # Environment vars from lambda and secrets manager
-    logging.info("Seeding environment")
+    logging.info("Healthcheck lambda check #1: Seeding environment from secrets manager")
     environment.seed()
     for key in environment.KEYS:
         if os.getenv(key):
@@ -21,7 +18,7 @@ def lambda_handler(_event, _context):
     logging.info("Environment populated with secrets from secretsmanager")
 
     # Database check
-    logging.info("Checking database connectivity")
+    logging.info("Healthcheck lambda #2: Checking database connectivity")
 
     with database.cursor() as cursor:
         logging.info("Database connection established")
@@ -38,16 +35,16 @@ def lambda_handler(_event, _context):
         logging.info("Database check complete")
 
     # OAuth check
-    logging.info("OAuth2 check")
+    logging.info("Healthcheck lambda check #3: OAuth2 check")
     token = access_token.get_token()
     logging.info("Access token: %s", token)
 
-    logging.info("Communication Management API (CMAPI) check")
+    logging.info("Healthcheck lambda check #4: Make request to Communication Management API (CMAPI)")
     response = requests.get(f"{os.getenv('COMMGT_BASE_URL')}/healthcheck", timeout=30)
     logging.info("Response from CMAPI healthcheck: %s", response.status_code)
     logging.info(response.text)
     logging.info("CMAPI check complete")
 
-    logging.info("All checks complete")
+    logging.info("Healthcheck lambda: All checks complete")
 
     return {"status": "success"}
