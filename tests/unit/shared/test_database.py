@@ -14,34 +14,36 @@ def mocked_env(monkeypatch):
     monkeypatch.setenv("REGION_NAME", "uk-west-1")
 
 
-@patch("oracledb.connect")
-def test_connection(mock_oracledb_connect):
-    with database.connection() as conn:
-        assert conn is not None
+def test_connection():
+    with patch("database.oracledb.connect"):
+        with database.connection() as conn:
+            assert conn is not None
 
-    assert conn.closed
+        assert conn.closed
 
-@pytest.mark.skip
-# test marked to skip as there is something funny with the python Mock on the oracledb.connect
-# this test is not working as expected- the database.connection() is not erroring
-# this should be looked into
-# DTOSS-8954 has been created to investigate this
+
 def test_failed_connection_to_db():
-    with patch("database.oracledb") as mock_oracledb:
-        mock_oracledb.Error = oracledb.Error
-        mock_oracledb.connect = Mock(side_effect=oracledb.Error("Something's not right"))
+    database.oracledb.connect = Mock(side_effect=oracledb.Error("Something's wrong"))
+    with pytest.raises(database.DatabaseError) as exc_info:
+        database.connection().__enter__()
 
-        with pytest.raises(database.DatabaseConnectionError) as exc_info:
-            database.connection()
+    assert str(exc_info.value) == "Database Error: Something's wrong"
 
-        assert str(exc_info.value) == "Failed to connect to the database. Something's not right"
 
-@patch("oracledb.connect")
-def test_cursor(mock_oracledb_connect):
-    with database.cursor() as cursor:
-        assert cursor is not None
+def test_cursor():
+    with patch("database.oracledb.connect"):
+        with database.cursor() as cursor:
+            assert cursor is not None
 
-    assert cursor.closed
+        assert cursor.closed
+
+
+def test_failed_cursor():
+    database.oracledb.connect.return_value.cursor = Mock(side_effect=oracledb.Error("Something's wrong"))
+    with pytest.raises(database.DatabaseError) as exc_info:
+        database.cursor().__enter__()
+
+    assert str(exc_info.value) == "Database Error: Something's wrong"
 
 
 def test_connection_params():
