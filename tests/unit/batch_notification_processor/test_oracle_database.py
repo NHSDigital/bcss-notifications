@@ -49,7 +49,17 @@ def test_get_recipients(mock_database):
     recipients = oracle_database.get_recipients(batch_id)
 
     mock_cursor.execute.assert_called_with(
-        "SELECT * FROM v_notify_message_queue WHERE batch_id = :batch_id", {'batch_id': batch_id})
+                """
+                SELECT nhs_number,
+                       message_id,
+                       batch_id,
+                       routing_plan_id,
+                       message_status
+                FROM v_notify_message_queue
+                WHERE batch_id = :batch_id
+                """,
+        {'batch_id': batch_id}
+    )
 
     assert len(recipients) == 2
     assert isinstance(recipients[0], Recipient)
