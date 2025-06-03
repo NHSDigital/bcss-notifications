@@ -1,13 +1,12 @@
-import unittest
 from unittest.mock import patch, Mock
 
 import pytest
 import oracledb
 import uuid
 
-from database import DatabaseConnectionError
 from recipient import Recipient
 import oracle_database
+
 
 @pytest.fixture
 def mock_db_credentials(monkeypatch):
