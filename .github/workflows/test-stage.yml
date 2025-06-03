@@ -34,7 +34,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Install Python"
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
@@ -70,7 +70,7 @@ jobs:
           --name oracle
     steps:
       - name: "Install Python"
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
@@ -96,7 +96,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Install Python"
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
