@@ -2,6 +2,7 @@
 
 mkdir -p build/python
 pip install poetry
+pip install poetry-plugin-export
 poetry export -f requirements.txt --without-hashes > requirements.txt
 poetry run pip install -r requirements.txt --target build/python/
 rm requirements.txt
