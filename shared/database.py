@@ -4,8 +4,8 @@ import oracledb
 import os
 
 
-class DatabaseConnectionError(Exception):
-    """Raised when there is an error connecting to the database"""
+class DatabaseError(Exception):
+    """Raised when there is an error from the database"""
 
 
 @contextmanager
@@ -17,23 +17,18 @@ def connection():
         finally:
             conn.close()
     except oracledb.Error as e:
-        logging.error("Error Connecting to Database: %s", e)
-        raise DatabaseConnectionError(f"Error Connecting to Database: {str(e)}") from e
+        logging.error("Database Error: %s", e)
+        raise DatabaseError(f"Database Error: {str(e)}") from e
 
 
 @contextmanager
 def cursor():
-    cur = None
-    try:
-        with connection() as conn:
-            cur = conn.cursor()
-            try:
-                yield cur
-            finally:
-                cur.close()
-    except oracledb.Error as e:
-        logging.error("Error Creating Cursor: %s", e)
-        raise DatabaseConnectionError(f"Error Creating Cursor: {str(e)}") from e
+    with connection() as conn:
+        cur = conn.cursor()
+        try:
+            yield cur
+        finally:
+            cur.close()
 
 
 def connection_params() -> dict:
