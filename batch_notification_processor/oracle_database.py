@@ -22,7 +22,15 @@ def get_recipients(batch_id: str) -> list[Recipient]:
     with database.cursor() as cursor:
         try:
             cursor.execute(
-                "SELECT * FROM v_notify_message_queue WHERE batch_id = :batch_id",
+                """
+                SELECT nhs_number,
+                       message_id,
+                       batch_id,
+                       routing_plan_id,
+                       message_status
+                FROM v_notify_message_queue
+                WHERE batch_id = :batch_id
+                """,
                 {"batch_id": batch_id},
             )
             recipient_data = cursor.fetchall()
