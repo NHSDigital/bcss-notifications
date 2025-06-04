@@ -25,8 +25,16 @@ def test_send_batch_message(mock_get_token):
             "batch_id",
             "routing_config_id",
             [
-                Recipient("0000000000", "message_reference_0", "requested"),
-                Recipient("1111111111", "message_reference_1", "requested"),
+                Recipient(
+                    "0000000000", "message_reference_0", "batch_id_0", "requested",
+                    "routing_config_id_0", "address_line_01", "address_line_02",
+                    "address_line_03", "address_line_04", "address_line_05", "postcode_0"
+                ),
+                Recipient(
+                    "1111111111", "message_reference_1", "batch_id_1", "requested",
+                    "routing_config_id_1", "address_line_11", "address_line_12",
+                    "address_line_13", "address_line_14", "address_line_15", "postcode_1"
+                ),
             ]
         )
         assert adapter.last_request.url == "http://example.com/message/batch"
@@ -42,12 +50,26 @@ def test_send_batch_message(mock_get_token):
                         {
                             "recipient": {"nhsNumber": "0000000000"},
                             "messageReference": "message_reference_0",
-                            "personalisation": {},
+                            "personalisation": {
+                                "address_line_1_bcss": "address_line_01",
+                                "address_line_2_bcss": "address_line_02",
+                                "address_line_3_bcss": "address_line_03",
+                                "address_line_4_bcss": "address_line_04",
+                                "address_line_5_bcss": "address_line_05",
+                                "address_line_6_bcss": "postcode_0",
+                            },
                         },
                         {
                             "recipient": {"nhsNumber": "1111111111"},
                             "messageReference": "message_reference_1",
-                            "personalisation": {},
+                            "personalisation": {
+                                "address_line_1_bcss": "address_line_11",
+                                "address_line_2_bcss": "address_line_12",
+                                "address_line_3_bcss": "address_line_13",
+                                "address_line_4_bcss": "address_line_14",
+                                "address_line_5_bcss": "address_line_15",
+                                "address_line_6_bcss": "postcode_1",
+                            },
                         },
                     ],
                 },
@@ -73,13 +95,24 @@ def test_generate_batch_message_request_body():
 
 
 def test_generate_message():
-    recipient = Recipient("0000000000", "message_reference_0", "requested")
+    recipient = Recipient(
+        "0000000000", "message_reference_0", "batch_id_0", "requested",
+        "routing_config_id_0", "address_line_01", "address_line_02",
+        "address_line_03", "address_line_04", "address_line_05", "postcode_0"
+    )
 
     message = communication_management.generate_message(recipient)
 
     assert message["messageReference"] == "message_reference_0"
     assert message["recipient"]["nhsNumber"] == "0000000000"
-    assert message["personalisation"] == {}
+    assert message["personalisation"] == {
+        "address_line_1_bcss": "address_line_01",
+        "address_line_2_bcss": "address_line_02",
+        "address_line_3_bcss": "address_line_03",
+        "address_line_4_bcss": "address_line_04",
+        "address_line_5_bcss": "address_line_05",
+        "address_line_6_bcss": "postcode_0",
+    }
 
 
 def test_generate_hmac_signature():
