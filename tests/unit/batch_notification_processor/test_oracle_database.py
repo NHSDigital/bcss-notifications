@@ -54,11 +54,17 @@ def test_get_recipients(mock_database):
                        message_id,
                        batch_id,
                        routing_plan_id,
-                       message_status
+                       message_status,
+                       address_line_1,
+                       address_line_2,
+                       address_line_3,
+                       address_line_4,
+                       address_line_5,
+                       postcode
                 FROM v_notify_message_queue
                 WHERE batch_id = :batch_id
                 """,
-        {'batch_id': batch_id}
+                {'batch_id': batch_id}
     )
 
     assert len(recipients) == 2

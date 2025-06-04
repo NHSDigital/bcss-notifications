@@ -27,7 +27,13 @@ def get_recipients(batch_id: str) -> list[Recipient]:
                        message_id,
                        batch_id,
                        routing_plan_id,
-                       message_status
+                       message_status,
+                       address_line_1,
+                       address_line_2,
+                       address_line_3,
+                       address_line_4,
+                       address_line_5,
+                       postcode
                 FROM v_notify_message_queue
                 WHERE batch_id = :batch_id
                 """,
