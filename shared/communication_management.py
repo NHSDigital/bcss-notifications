@@ -79,12 +79,21 @@ def generate_batch_message_request_body(
     }
 
 
+# pylint: disable=no-member
 def generate_message(recipient) -> dict:
     return {
-        "messageReference": recipient.message_id, # pylint: disable=no-member
-        "recipient": {"nhsNumber": recipient.nhs_number}, # pylint: disable=no-member
-        "personalisation": {},
+        "messageReference": recipient.message_id,
+        "recipient": {"nhsNumber": recipient.nhs_number},
+        "personalisation": {
+            "address_line_1_bcss": recipient.address_line_1,
+            "address_line_2_bcss": recipient.address_line_2,
+            "address_line_3_bcss": recipient.address_line_3,
+            "address_line_4_bcss": recipient.address_line_4,
+            "address_line_5_bcss": recipient.address_line_5,
+            "address_line_6_bcss": recipient.postcode,
+        },
     }
+# pylint: enable=no-member
 
 
 def generate_hmac_signature(request_body: dict) -> str:
