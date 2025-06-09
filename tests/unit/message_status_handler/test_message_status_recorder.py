@@ -2,27 +2,51 @@ from unittest.mock import Mock, patch
 
 import message_status_recorder
 
-import database
 
+@patch("message_status_recorder.fetch_batch_id_for_message", return_value="batch_id_1")
 @patch("message_status_recorder.update_message_status", return_value=12)
 @patch("database.cursor")
-def test_record_message_statuses(mock_cursor, mock_update_message_status):
-    batch_id = "batch_id"
-    json_data = {
-        "data": [
-            {"message_reference": "message_reference_1"},
-            {"message_reference": "message_reference_2"},
-        ]
-    }
-    message_status_recorder.record_message_statuses(batch_id, json_data)
+def test_record_message_status(mock_cursor, mock_update_message_status, mock_fetch_batch_id_for_message):
+    """Test the record_message_status calls update_message_status function."""
+    json_data = {"data": {"attributes": {"messageReference": "message_reference_1"}}}
 
-    assert mock_update_message_status.call_count == 2
-    mock_update_message_status.assert_any_call(mock_cursor().__enter__(), batch_id, "message_reference_1")
-    mock_update_message_status.assert_any_call(mock_cursor().__enter__(), batch_id, "message_reference_2")
+    message_status_recorder.record_message_status(json_data)
+
+    assert mock_update_message_status.call_count == 1
+    assert mock_fetch_batch_id_for_message.call_count == 1
+    mock_update_message_status.assert_any_call(mock_cursor().__enter__(), "batch_id_1", "message_reference_1")
+
+
+def test_record_message_status_no_message_reference():
+    """Test the record_message_status when no message reference is provided."""
+    json_data = {"data": {"attributes": {}}}
+
+    response_code = message_status_recorder.record_message_status(json_data)
+
+    assert response_code == 0
+
+
+def test_fetch_batch_id_for_message():
+    """Test the fetch_batch_id_for_message function."""
+    mock_cursor = Mock()
+    mock_cursor.fetchone.return_value = ("batch_id_1",)
+
+    response = message_status_recorder.fetch_batch_id_for_message(mock_cursor, "message_reference_1")
+
+    assert response == "batch_id_1"
+    mock_cursor.execute.assert_called_once_with(
+        (
+            "SELECT batch_id FROM v_notify_message_queue "
+            "WHERE message_id = :message_reference "
+            "AND message_status = 'sending'"
+        ),
+        {"message_reference": "message_reference_1"},
+    )
 
 
 @patch("database.cursor")
 def test_update_message_status(mock_cursor):
+    """Test the update_message_status function."""
     mock_cursor_contextmanager = mock_cursor().__enter__()
     mock_var = Mock(getvalue=Mock(return_value=12))
     mock_cursor_contextmanager.var.return_value = mock_var
