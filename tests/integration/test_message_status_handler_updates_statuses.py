@@ -1,11 +1,13 @@
 import dotenv
-import os
-import requests_mock
+import json
 import uuid
+
+from request_verifier import create_digest, notify_api_key, signature_secret
 
 dotenv.load_dotenv(".env.test")
 
-import scheduled_lambda_function as lambda_function
+import callback_lambda_function as lambda_function
+
 
 def test_message_status_handler_updates_message_status(recipient_data, helpers):
     """Test that the message status handler updates the message statuses correctly."""
@@ -14,33 +16,27 @@ def test_message_status_handler_updates_message_status(recipient_data, helpers):
     helpers.seed_message_queue(batch_id, recipient_data)
     helpers.call_get_next_batch(batch_id)
     helpers.mark_batch_as_sent(batch_id)
-
-    with requests_mock.Mocker() as rm:
-        rm.get(
-            f"{os.getenv('COMMGT_BASE_URL')}/statuses",
-            status_code=201,
-            json={
-                'status': 'success',
-                'data': [
-                    {
-                        'channel': 'nhsapp',
-                        'channelStatus': 'delivered',
-                        'supplierStatus': 'read',
-                        'message_id': '2WL3qFTEFM0qMY8xjRbt1LIKCzM',
-                        'message_reference': message_references[0]
-                    },
-                    {
-                        'channel': 'nhsapp',
-                        'channelStatus': 'delivered',
-                        'supplierStatus': 'read',
-                        'message_id': '5EL3qFTEFM0qMY8xjRbt1LIKCzM',
-                        'message_reference': message_references[1]
-                    },
-                ]
+    request_body = {
+        "data": {
+            "type": "ChannelStatus",
+            "attributes": {
+                "channel": "nhsapp",
+                "supplierStatus": "read",
+                "messageReference": message_references[0]
             }
-        )
+        }
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "x-hmac-sha256-signature": create_digest(signature_secret(), json.dumps(request_body, sort_keys=True)),
+        "x-api-key": notify_api_key(),
+    }
 
-        lambda_function.lambda_handler({}, {})
+    lambda_function.lambda_handler({
+        "headers": headers,
+        "body": json.dumps(request_body)
+    }, {})
 
     with helpers.cursor() as cur:
         cur.execute(
@@ -49,6 +45,38 @@ def test_message_status_handler_updates_message_status(recipient_data, helpers):
         )
         results = cur.fetchall()
 
-    assert len(results) == 2
+    assert len(results) == 1
     assert results[0][0] == message_references[0]
-    assert results[1][0] == message_references[1]
+
+
+def test_message_status_handler_invalid_request(helpers):
+    """Test that the message status handler does nothing for invalid requests."""
+    request_body = {
+        "data": {
+            "type": "ChannelStatus",
+            "attributes": {
+                "channel": "nhsapp",
+                "supplierStatus": "read",
+                "messageId": "invalid-message-id"
+            }
+        }
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "x-hmac-sha256-signature": create_digest(signature_secret(), json.dumps(request_body, sort_keys=True)),
+        "x-api-key": notify_api_key(),
+    }
+
+    lambda_function.lambda_handler({
+        "headers": headers,
+        "body": json.dumps(request_body)
+    }, {})
+
+    with helpers.cursor() as cur:
+        cur.execute(
+            "SELECT COUNT(*) FROM v_notify_message_queue WHERE message_status = 'read'"
+        )
+        count = cur.fetchone()[0]
+
+    assert count == 0
