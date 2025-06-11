@@ -51,7 +51,11 @@ def verify_signature(headers: dict, body: dict) -> bool:
 
 
 def verify_body(body: dict) -> bool:
-    data = body.get('data', {})
+    data = body.get('data', [{}])
+    return all(verify_data(d) for d in data)
+
+
+def verify_data(data: dict) -> bool:
     if data.get('type') == 'ChannelStatus':
         attributes = data.get('attributes', {})
         return (

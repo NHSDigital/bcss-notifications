@@ -3,12 +3,32 @@ from unittest.mock import Mock, patch
 import message_status_recorder
 
 
+@patch("message_status_recorder.record_message_status")
+def test_record_message_statuses(mock_record_message_status):
+    """Test the record_message_statuses function with multiple message status records."""
+    mock_record_message_status.side_effect = [0, 1]
+
+    json_data = {
+        "data": [
+            {"attributes": {"messageReference": "message_reference_1"}},
+            {"attributes": {"messageReference": "message_reference_2"}},
+        ]
+    }
+
+    response_codes = message_status_recorder.record_message_statuses(json_data)
+
+    assert response_codes == [0, 1]
+    assert mock_record_message_status.call_count == 2
+    mock_record_message_status.assert_any_call({"attributes": {"messageReference": "message_reference_1"}})
+    mock_record_message_status.assert_any_call({"attributes": {"messageReference": "message_reference_2"}})
+
+
 @patch("message_status_recorder.fetch_batch_id_for_message", return_value="batch_id_1")
 @patch("message_status_recorder.update_message_status", return_value=12)
 @patch("database.cursor")
 def test_record_message_status(mock_cursor, mock_update_message_status, mock_fetch_batch_id_for_message):
     """Test the record_message_status calls update_message_status function."""
-    json_data = {"data": {"attributes": {"messageReference": "message_reference_1"}}}
+    json_data = {"attributes": {"messageReference": "message_reference_1"}}
 
     message_status_recorder.record_message_status(json_data)
 
@@ -19,7 +39,7 @@ def test_record_message_status(mock_cursor, mock_update_message_status, mock_fet
 
 def test_record_message_status_no_message_reference():
     """Test the record_message_status when no message reference is provided."""
-    json_data = {"data": {"attributes": {}}}
+    json_data = {"attributes": {}}
 
     response_code = message_status_recorder.record_message_status(json_data)
 

@@ -17,14 +17,16 @@ def test_message_status_handler_updates_message_status(recipient_data, helpers):
     helpers.call_get_next_batch(batch_id)
     helpers.mark_batch_as_sent(batch_id)
     request_body = {
-        "data": {
-            "type": "ChannelStatus",
-            "attributes": {
-                "channel": "nhsapp",
-                "supplierStatus": "read",
-                "messageReference": message_references[0]
+        "data": [
+            {
+                "type": "ChannelStatus",
+                "attributes": {
+                    "channel": "nhsapp",
+                    "supplierStatus": "read",
+                    "messageReference": message_references[0]
+                }
             }
-        }
+        ]
     }
     headers = {
         "Content-Type": "application/json",
@@ -52,14 +54,16 @@ def test_message_status_handler_updates_message_status(recipient_data, helpers):
 def test_message_status_handler_invalid_request(helpers):
     """Test that the message status handler does nothing for invalid requests."""
     request_body = {
-        "data": {
-            "type": "ChannelStatus",
-            "attributes": {
-                "channel": "nhsapp",
-                "supplierStatus": "read",
-                "messageId": "invalid-message-id"
+        "data": [
+            {
+                "type": "ChannelStatus",
+                "attributes": {
+                    "channel": "nhsapp",
+                    "supplierStatus": "read",
+                    "messageId": "invalid-message-id"
+                }
             }
-        }
+        ]
     }
     headers = {
         "Content-Type": "application/json",
