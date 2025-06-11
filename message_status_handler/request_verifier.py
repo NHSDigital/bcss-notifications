@@ -11,11 +11,11 @@ SIGNATURE_HEADER_NAME = 'x-hmac-sha256-signature'
 def verify_request(headers: dict, body: dict) -> bool:
     is_valid, error_message = verify_headers(headers)
     if not is_valid:
-        logging.error("Header verification failed: %s", error_message)
+        logging.warning("Header verification failed: %s", error_message)
         return False
 
     if not verify_signature(headers, body):
-        logging.error("Signature verification failed")
+        logging.warning("Signature verification failed")
         return False
 
     if not verify_body(body):
