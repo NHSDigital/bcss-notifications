@@ -172,10 +172,12 @@ resource "aws_iam_role_policy_attachment" "batch_notification_processor_lambda_k
 data "aws_iam_policy_document" "batch_notification_processor_s3_policy_document" {
   statement {
     actions = [
+      "s3:GetObject",
       "s3:PutObject",
     ]
     resources = [
-      var.notification_s3_bucket_arn
+      var.notification_s3_bucket_arn,
+      "${var.notification_s3_bucket_arn}/*",
     ]
   }
 }

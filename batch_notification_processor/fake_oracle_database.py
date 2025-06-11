@@ -2,33 +2,43 @@ import boto3
 import csv
 import functools
 import os
+import uuid
 from recipient import Recipient
 
 
+# pylint: disable=unused-argument
+
 @functools.cache
-def get_routing_plan_id():
+def get_routing_plan_id(batch_id: str):
     return "e43a7d31-a287-485e-b1c2-f53cebbefba3"
 
 
 @functools.cache
 def get_recipients(batch_id: str):
-    for row in csv.DictReader(raw_recipients_data()):
-        yield (
-            row.get("NHS_NUMBER"),
-            None,
-            batch_id,
-            get_routing_plan_id(),
-            "new",
-            row.get("ADDRESS_LINE_1"),
-            row.get("ADDRESS_LINE_2"),
-            row.get("ADDRESS_LINE_3"),
-            row.get("ADDRESS_LINE_4"),
-            row.get("ADDRESS_LINE_5"),
-            row.get("POSTCODE"),
-        )
+    recipients = []
+
+    if not bool(os.getenv("TEST_DATA_FETCHED")):
+        for row in csv.DictReader(raw_recipients_data()):
+            recipients.append(
+                Recipient((
+                    row.get("NHS_NUMBER"),
+                    str(uuid.uuid4()),
+                    batch_id,
+                    get_routing_plan_id(batch_id),
+                    "new",
+                    row.get("ADDRESS_LINE_1"),
+                    row.get("ADDRESS_LINE_2"),
+                    row.get("ADDRESS_LINE_3"),
+                    row.get("ADDRESS_LINE_4"),
+                    row.get("ADDRESS_LINE_5"),
+                    row.get("POSTCODE"),
+                ))
+            )
+        os.environ["TEST_DATA_FETCHED"] = "true"
+
+    return recipients
 
 
-# pylint: disable=unused-argument
 def mark_batch_as_sent(batch_id: str):
     return 1
 
