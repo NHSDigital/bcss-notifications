@@ -1,8 +1,4 @@
 import access_token
-import hashlib
-import hmac
-import json
-import logging
 import os
 import uuid
 from recipient import Recipient
@@ -18,17 +14,14 @@ def send_batch_message(
         routing_config_id, batch_id, recipients
     )
 
-    hmac_signature = generate_hmac_signature(request_body)
     headers = {
         "content-type": "application/vnd.api+json",
         "accept": "application/vnd.api+json",
         "x-correlation-id": str(uuid.uuid4()),
-        "x-api-key": os.getenv("API_KEY"),
-        "x-hmac-sha256-signature": hmac_signature,
         "authorization": f"Bearer {access_token.get_token()}"
     }
 
-    url = f"{os.getenv('COMMGT_BASE_URL')}/message/batch"
+    url = f"{os.getenv('NOTIFY_API_BASE_URL')}/comms/v1/message-batches"
 
     response = requests.post(
         url,
@@ -38,31 +31,6 @@ def send_batch_message(
     )
 
     return response
-
-
-def get_read_messages(batch_reference: str) -> dict:
-    response = get_statuses(batch_reference)
-
-    if response.status_code == 201:
-        return response.json()
-
-    logging.error("Failed to fetch messages that have been read: %s ", response.text)
-    return {
-        "status": "error",
-        "message": f"Failed to fetch messages that have been read: {response.text}",
-        "data": [],
-    }
-
-
-def get_statuses(batch_reference):
-    response = requests.get(
-        f"{os.getenv('COMMGT_BASE_URL')}/statuses",
-        headers={"x-api-key": os.getenv("API_KEY")},
-        params={"batchReference": batch_reference, "channel": "nhsapp", "supplierStatus": "read"},
-        timeout=10
-    )
-    return response
-
 
 def generate_batch_message_request_body(
     routing_config_id: str, message_batch_reference: str, recipients: list[Recipient]
@@ -94,15 +62,3 @@ def generate_message(recipient) -> dict:
         },
     }
 # pylint: enable=no-member
-
-
-def generate_hmac_signature(request_body: dict) -> str:
-    return hmac.new(
-        bytes(secret(), 'ASCII'),
-        msg=bytes(json.dumps(request_body), 'ASCII'),
-        digestmod=hashlib.sha256
-    ).hexdigest()
-
-
-def secret() -> str:
-    return f"{os.getenv('APPLICATION_ID')}.{os.getenv('API_KEY')}"

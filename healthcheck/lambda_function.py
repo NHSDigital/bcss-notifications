@@ -39,8 +39,8 @@ def lambda_handler(_event, _context):
     token = access_token.get_token()
     logging.info("Access token: %s", token)
 
-    logging.info("Healthcheck lambda check #4: Make request to Communication Management API (CMAPI)")
-    response = requests.get(f"{os.getenv('COMMGT_BASE_URL')}/healthcheck", timeout=30)
+    logging.info("Healthcheck lambda check #4: Make request to NHS Notify API")
+    response = requests.get(f"{os.getenv('NOTIFY_API_BASE_URL')}/healthcheck", timeout=30)
     logging.info("Response from CMAPI healthcheck: %s", response.status_code)
     logging.info(response.text)
     logging.info("CMAPI check complete")

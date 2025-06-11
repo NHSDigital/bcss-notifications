@@ -3,7 +3,7 @@
 import batch_processor
 import environment
 import logging
-import communication_management
+import notify_api
 
 def lambda_handler(_event: dict, _context: object) -> dict:
     """
@@ -19,7 +19,7 @@ def lambda_handler(_event: dict, _context: object) -> dict:
     logging.info("Processing next batch. (batch_id: %s, routing_plan_id: %s, recipients: %s)", batch_id, routing_plan_id, recipients)
 
     while routing_plan_id and recipients:
-        response = communication_management.send_batch_message(
+        response = notify_api.send_batch_message(
             batch_id, routing_plan_id, recipients
         )
 
