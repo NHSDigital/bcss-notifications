@@ -1,8 +1,4 @@
 import access_token
-import hashlib
-import hmac
-import json
-import logging
 import os
 import uuid
 from recipient import Recipient
@@ -25,7 +21,7 @@ def send_batch_message(
         "authorization": f"Bearer {access_token.get_token()}"
     }
 
-    url = f"{os.getenv('NOTIFY_API_BASE_URL')}/v1/message-batches"
+    url = f"{os.getenv('NOTIFY_API_BASE_URL')}/comms/v1/message-batches"
 
     response = requests.post(
         url,
