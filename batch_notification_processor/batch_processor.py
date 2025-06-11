@@ -42,18 +42,19 @@ def get_routing_plan_id(batch_id):
 
 def get_recipients(batch_id):
     recipients = []
+    recipients_results = []
 
     try:
-        recipients = oracle_database.get_recipients(batch_id)
-        if not recipients:
+        recipients_results = oracle_database.get_recipients(batch_id)
+        if not recipients_results:
             logging.error("No recipients for batch ID: %s", batch_id)
     except oracledb.Error as e:
         logging.error("Error fetching recipients: %s", e)
 
-    for idx, recipient in enumerate(recipients):
+    for recipient in recipients_results:
         recipient = recipient._replace(message_id=generate_message_reference())
         oracle_database.update_message_id(recipient)
-        recipients[idx] = recipient
+        recipients.append(recipient)
 
     return recipients
 

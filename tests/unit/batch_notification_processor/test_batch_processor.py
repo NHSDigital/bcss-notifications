@@ -29,15 +29,24 @@ def recipients():
 def test_next_batch(mock_oracle_database, recipients, batch_id, plan_id):
     mock_oracle_database.get_routing_plan_id.return_value = plan_id
     mock_oracle_database.get_recipients.return_value = recipients
-    with patch("batch_processor.generate_reference") as mock_generate_reference:
-        mock_generate_reference.return_value = batch_id
+    with patch("batch_processor.generate_batch_id") as mock_generate_batch_id:
+        mock_generate_batch_id.return_value = batch_id
 
-        result = batch_processor.next_batch()
+        with patch("batch_processor.generate_message_reference") as mock_generate_message_reference:
+            mock_generate_message_reference.side_effect = ["message_reference_0", "message_reference_1"]
 
-    assert result == (batch_id, plan_id, recipients)
+            result = batch_processor.next_batch()
+
+    recipients_with_message_ids = [
+        recipients[0]._replace(message_id="message_reference_0"),
+        recipients[1]._replace(message_id="message_reference_1"),
+    ]
+
+    assert result == (batch_id, plan_id, recipients_with_message_ids)
     assert mock_oracle_database.get_routing_plan_id.call_count == 1
     assert mock_oracle_database.get_recipients.call_count == 1
-    assert mock_generate_reference.call_count == 3
+    assert mock_generate_batch_id.call_count == 1
+    assert mock_generate_message_reference.call_count == 2
 
 
 @patch("batch_processor.oracle_database")
