@@ -38,7 +38,6 @@ def fetch_batch_id_for_message(cursor, message_reference: str):
 
 
 def update_message_status(cursor, batch_id: str, message_reference: str):
-    response_code = 0
     var = cursor.var(int)
 
     cursor.execute(
@@ -56,6 +55,4 @@ def update_message_status(cursor, batch_id: str, message_reference: str):
     )
     cursor.connection.commit()
 
-    response_code = var.getvalue()
-
-    return response_code
+    return var.getvalue()
