@@ -1,9 +1,18 @@
 import database
 
 
+def record_message_statuses(json_data: dict):
+    response_codes = []
+    for data in json_data.get('data', [{}]):
+        response_code = record_message_status(data)
+        response_codes.append(response_code)
+
+    return response_codes
+
+
 def record_message_status(json_data: dict):
     response_code = 0
-    message_reference = json_data.get('data', {}).get('attributes', {}).get('messageReference')
+    message_reference = json_data.get('attributes', {}).get('messageReference')
 
     if message_reference is not None:
         with database.cursor() as cursor:
