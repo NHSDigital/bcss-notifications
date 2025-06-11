@@ -113,6 +113,11 @@ resource "aws_lambda_function" "message_status_handler" {
   tags = var.tags
 }
 
+resource "aws_lambda_function_url" "message_status_handler_url" {
+  function_name      = aws_lambda_function.message_status_handler.function_name
+  authorization_type = "NONE"
+}
+
 resource "aws_lambda_event_source_mapping" "sqs_trigger" {
   event_source_arn = var.sqs_queue_arn
   function_name    = aws_lambda_function.message_status_handler.function_name
