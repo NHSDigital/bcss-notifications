@@ -90,24 +90,24 @@ jobs:
       - name: "Run integration tests"
         run: |
           poetry run pytest tests/integration
-  # end-to-end-tests:
-  #   name: "End to end tests"
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 5
-  #   steps:
-  #     - name: "Install Python"
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: "3.13"
-  #
-  #     - name: "Checkout code"
-  #       uses: actions/checkout@v4
-  #
-  #     - name: "Install dependencies"
-  #       run: |
-  #         pip install poetry
-  #         poetry install --no-root
-  #
-  #     - name: "Run end to end tests"
-  #       run: |
-  #         ./test-end-to-end.sh
+  end-to-end-tests:
+    name: "End to end tests"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Install Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: "Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "Install dependencies"
+        run: |
+          pip install poetry
+          poetry install --no-root
+
+      - name: "Run end to end tests"
+        run: |
+          ./test-end-to-end.sh
