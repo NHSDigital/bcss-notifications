@@ -3,12 +3,7 @@ import hashlib
 import time
 import uuid
 import oracledb
-import os
-
-if bool(os.getenv("USE_TEST_RECIPIENT_DATA")):
-    import fake_oracle_database as oracle_database
-else:
-    import oracle_database
+import oracle_database
 
 
 class RecipientsNotFoundError(Exception):
