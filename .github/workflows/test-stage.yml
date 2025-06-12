@@ -7,6 +7,9 @@ on:
   pull_request:
     types: [opened, reopened]
 
+permissions:
+  contents: read
+
 jobs:
   unit-testing:
     name: "Unit tests"
