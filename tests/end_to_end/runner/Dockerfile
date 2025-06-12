@@ -14,12 +14,12 @@ ENV API_KEY=${API_KEY} \
     OAUTH_TOKEN_URL=${OAUTH_TOKEN_URL} \
     PIP_ONLY_BINARY=ALL \
     PRIVATE_KEY=${PRIVATE_KEY} \
-    REGION_NAME=${REGION_NAME} \
-    SCHEDULE_STATUS_CHECK_MINUTES=${SCHEDULE_STATUS_CHECK_MINUTES}
+    REGION_NAME=${REGION_NAME}
 
 COPY --from=root_dir pyproject.toml /
 COPY --from=root_dir poetry.lock /
 COPY --from=root_dir .env.test /.env
+COPY --from=root_dir message_status_handler/request_verifier.py /tests/end_to_end/request_verifier.py
 COPY . /tests/end_to_end
 
 RUN pip install poetry

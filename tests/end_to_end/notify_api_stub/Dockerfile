@@ -4,9 +4,10 @@ FROM --platform=$BUILDPLATFORM python:3.10-alpine AS builder
 WORKDIR /app
 
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip3 install dotenv flask jsonschema
+    pip3 install dotenv flask jsonschema requests
 
 COPY --from=root_dir .env.test /app/.env
+COPY --from=root_dir message_status_handler/request_verifier.py /app/request_verifier.py
 COPY . /app
 
 ENTRYPOINT ["python3"]
