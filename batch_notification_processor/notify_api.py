@@ -32,6 +32,7 @@ def send_batch_message(
 
     return response
 
+
 def generate_batch_message_request_body(
     routing_config_id: str, message_batch_reference: str, recipients: list[Recipient]
 ) -> dict:
@@ -53,12 +54,12 @@ def generate_message(recipient) -> dict:
         "messageReference": recipient.message_id,
         "recipient": {"nhsNumber": recipient.nhs_number},
         "personalisation": {
-            "address_line_1_bcss": recipient.address_line_1,
-            "address_line_2_bcss": recipient.address_line_2,
-            "address_line_3_bcss": recipient.address_line_3,
-            "address_line_4_bcss": recipient.address_line_4,
-            "address_line_5_bcss": recipient.address_line_5,
-            "address_line_6_bcss": recipient.postcode,
+            "address_line_1_bcss": (recipient.address_line_1 or ""),
+            "address_line_2_bcss": (recipient.address_line_2 or ""),
+            "address_line_3_bcss": (recipient.address_line_3 or ""),
+            "address_line_4_bcss": (recipient.address_line_4 or ""),
+            "address_line_5_bcss": (recipient.address_line_5 or ""),
+            "address_line_6_bcss": (recipient.postcode or ""),
         },
     }
 # pylint: enable=no-member
