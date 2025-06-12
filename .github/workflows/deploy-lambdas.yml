@@ -77,3 +77,11 @@ jobs:
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-message-status-handler-dev \
             --zip-file fileb://message_status_handler/code.zip \
             --region eu-west-2
+      - name: Create zip file for Healthcheck function
+        run: cd healthcheck && cp ../shared/*.py . && zip -r code.zip ./*.py
+      - name: Update Healthcheck lambda function code
+        run: |
+          aws lambda update-function-code \
+            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-healthcheck-dev \
+            --zip-file fileb://healthcheck/code.zip \
+            --region eu-west-2
