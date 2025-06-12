@@ -402,6 +402,7 @@ disable = [
     "too-many-return-statements",
     "wrong-import-order",
     "too-few-public-methods",
+    "unsupported-binary-operation",
 ]
 
 # Enable the message, report, category or checker with the given id(s). You can
