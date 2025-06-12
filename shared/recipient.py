@@ -1,7 +1,5 @@
 from typing import NamedTuple
 
-# pylint: disable=unsupported-binary-operation
-
 
 class Recipient(NamedTuple):
     nhs_number: str | None = None

@@ -44,3 +44,19 @@ def test_recipient_attribute_assignment():
 
     assert recipient.message_id == "message_reference"
     assert recipient.message_status == "message_status"
+
+
+def test_recipient_default_values():
+    recipient = Recipient()
+
+    assert recipient.nhs_number is None
+    assert recipient.message_id is None
+    assert recipient.batch_id is None
+    assert recipient.routing_plan_id is None
+    assert recipient.message_status is None
+    assert recipient.address_line_1 is None
+    assert recipient.address_line_2 is None
+    assert recipient.address_line_3 is None
+    assert recipient.address_line_4 is None
+    assert recipient.address_line_5 is None
+    assert recipient.postcode is None

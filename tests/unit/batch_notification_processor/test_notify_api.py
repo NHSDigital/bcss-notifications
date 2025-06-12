@@ -112,3 +112,23 @@ def test_generate_message():
         "address_line_5_bcss": "address_line_05",
         "address_line_6_bcss": "postcode_0",
     }
+
+
+def test_generate_message_with_partial_data():
+    recipient = Recipient(
+        "0000000000", "message_reference_0", "batch_id_0", "requested",
+        "routing_config_id_0"
+    )
+
+    message = notify_api.generate_message(recipient)
+
+    assert message["messageReference"] == "message_reference_0"
+    assert message["recipient"]["nhsNumber"] == "0000000000"
+    assert message["personalisation"] == {
+        "address_line_1_bcss": "",
+        "address_line_2_bcss": "",
+        "address_line_3_bcss": "",
+        "address_line_4_bcss": "",
+        "address_line_5_bcss": "",
+        "address_line_6_bcss": "",
+    }
