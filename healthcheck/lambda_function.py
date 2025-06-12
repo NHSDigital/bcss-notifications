@@ -37,13 +37,17 @@ def lambda_handler(_event, _context):
     # OAuth check
     logging.info("Healthcheck lambda check #3: OAuth2 check")
     token = access_token.get_token()
-    logging.info("Access token: %s", token)
+    logging.info("Access token obtained: %s", bool(token))
 
     logging.info("Healthcheck lambda check #4: Make request to NHS Notify API")
-    response = requests.get(f"{os.getenv('NOTIFY_API_BASE_URL')}/healthcheck", timeout=30)
-    logging.info("Response from CMAPI healthcheck: %s", response.status_code)
+    response = requests.get(
+        f"{os.getenv('NOTIFY_API_BASE_URL')}/comms/v1/messages/2WL3qFTEFM0qMY8xjRbt1LIKCzM",
+        headers={"Accept": "application/vnd.api+json", "Authorization": f"Bearer {token}"},
+        timeout=20
+    )
+    logging.info("Response from NHS Notify API: %s", response.status_code)
     logging.info(response.text)
-    logging.info("CMAPI check complete")
+    logging.info("NHS Notify API check complete")
 
     logging.info("Healthcheck lambda: All checks complete")
 
