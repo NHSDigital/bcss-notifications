@@ -85,3 +85,11 @@ jobs:
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-healthcheck-dev \
             --zip-file fileb://healthcheck/code.zip \
             --region eu-west-2
+      - name: Create zip file for Callback Simulator function
+        run: cd callback_simulator && cp ../shared/*.py . && zip -r code.zip ./*.py
+      - name: Update Callback Simulator lambda function code
+        run: |
+          aws lambda update-function-code \
+            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-callback-simulator-dev \
+            --zip-file fileb://callback_simulator/code.zip \
+            --region eu-west-2
