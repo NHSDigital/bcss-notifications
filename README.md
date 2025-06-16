@@ -8,20 +8,15 @@ The functions are intended to be deployed to AWS Lambda.
 
 The names of the functions are a work in progress. They are described below:
 
-
 ### Batch Notification Processor
 
 This function calls the BCSS Oracle database to obtain batches of recipients eligible for pre-invitation notifications.
 There are currently two message definitions with corresponding notification templates designed specifically for recipients who have had a previous cancer diagnosis and for recipients with no previous diagnosis.
 The batch notification processor lambda is scheduled for 08:00 and 09:00 every day. Each invocation will loop through all available batches of recipients until there are no more to process.
 
-
 ### Message Status Handler
 
-This function checks the status of notifications via the Communication Management API.
-It does this by fetching the batch IDs of successfully sent batches which are stored in BCSS Oracle and then fetching the message IDs of notifications delivered and read via the NHS App.
-It updates the status of a batch of pre-invitations in the BCSS Oracle database.
-
+This function is called by NHS Notify on any status update, and then updates the status of the associated pre-invitation record in the BCSS Oracle database.
 
 ## Development setup
 
