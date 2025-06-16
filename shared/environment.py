@@ -5,7 +5,6 @@ import requests
 import time
 
 KEYS = [
-  "API_KEY",
   "APPLICATION_ID",
   "DATABASE_HOST",
   "DATABASE_PASSWORD",

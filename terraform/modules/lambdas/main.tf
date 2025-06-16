@@ -43,12 +43,12 @@ resource "aws_lambda_function" "batch_notification_processor" {
 
   environment {
     variables = {
-      COMMGT_BASE_URL = local.secrets["commgt_base_url"]
-      DATABASE_PORT   = local.secrets["database_port"]
-      ENVIRONMENT     = var.environment
-      OAUTH_TOKEN_URL = local.secrets["oauth_token_url"]
-      REGION_NAME     = var.region
-      SECRET_ARN      = var.secrets_arn
+      DATABASE_PORT       = local.secrets["database_port"]
+      ENVIRONMENT         = var.environment
+      NOTIFY_API_BASE_URL = local.secrets["notify_api_base_url"]
+      OAUTH_TOKEN_URL     = local.secrets["oauth_token_url"]
+      REGION_NAME         = var.region
+      SECRET_ARN          = var.secrets_arn
 
       LAMBDA_STATUS_CHECK_ARN      = aws_lambda_function.message_status_handler.arn
       LAMBDA_STATUS_CHECK_ROLE_ARN = var.message_status_handler_lambda_role_arn
@@ -75,7 +75,7 @@ resource "aws_lambda_function" "message_status_handler" {
   depends_on       = [null_resource.message_status_handler_lambda_zip]
   filename         = "${path.module}/message_status_handler.zip"
   function_name    = "${var.team}-${var.project}-message-status-handler-${var.environment}"
-  handler          = "scheduled_lambda_function.lambda_handler"
+  handler          = "callback_lambda_function.lambda_handler"
   memory_size      = 128
   role             = var.message_status_handler_lambda_role_arn
   runtime          = local.runtime
@@ -99,11 +99,11 @@ resource "aws_lambda_function" "message_status_handler" {
 
   environment {
     variables = {
-      COMMGT_BASE_URL = local.secrets["commgt_base_url"]
-      DATABASE_PORT   = local.secrets["database_port"]
-      ENVIRONMENT     = var.environment
-      REGION_NAME     = var.region
-      SECRET_ARN      = var.secrets_arn
+      DATABASE_PORT       = local.secrets["database_port"]
+      ENVIRONMENT         = var.environment
+      NOTIFY_API_BASE_URL = local.secrets["notify_api_base_url"]
+      REGION_NAME         = var.region
+      SECRET_ARN          = var.secrets_arn
 
       PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED = "true"
       PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "debug"
@@ -174,12 +174,65 @@ resource "aws_lambda_function" "healthcheck" {
 
   environment {
     variables = {
-      COMMGT_BASE_URL = local.secrets["commgt_base_url"]
-      DATABASE_PORT   = local.secrets["database_port"]
-      ENVIRONMENT     = var.environment
-      OAUTH_TOKEN_URL = local.secrets["oauth_token_url"]
-      REGION_NAME     = var.region
-      SECRET_ARN      = var.secrets_arn
+      DATABASE_PORT       = local.secrets["database_port"]
+      ENVIRONMENT         = var.environment
+      NOTIFY_API_BASE_URL = local.secrets["notify_api_base_url"]
+      OAUTH_TOKEN_URL     = local.secrets["oauth_token_url"]
+      REGION_NAME         = var.region
+      SECRET_ARN          = var.secrets_arn
+
+      PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED = "true"
+      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "debug"
+    }
+  }
+
+  tags = var.tags
+}
+
+resource "null_resource" "callback_simulator_lambda_zip" {
+  provisioner "local-exec" {
+    command     = "./build.sh callback_simulator"
+    working_dir = path.module
+  }
+  triggers = {
+    always_run = local.build_trigger
+  }
+}
+
+resource "aws_lambda_function" "callback_simulator" {
+  depends_on       = [null_resource.callback_simulator_lambda_zip]
+  filename         = "${path.module}/callback_simulator.zip"
+  function_name    = "${var.team}-${var.project}-callback-simulator-${var.environment}"
+  handler          = "lambda_function.lambda_handler"
+  memory_size      = 128
+  role             = var.callback_simulator_lambda_role_arn
+  runtime          = local.runtime
+  source_code_hash = local.build_trigger
+  timeout          = 300
+
+  logging_config {
+    application_log_level = "INFO"
+    log_format            = "JSON"
+  }
+
+  vpc_config {
+    subnet_ids         = var.subnet_ids
+    security_group_ids = [var.security_group]
+  }
+
+  layers = [
+    var.parameters_and_secrets_lambda_extension_arn,
+    var.python_packages_layer_arn
+  ]
+
+  environment {
+    variables = {
+      DATABASE_PORT = local.secrets["database_port"]
+      ENVIRONMENT   = var.environment
+      REGION_NAME   = var.region
+      SECRET_ARN    = var.secrets_arn
+
+      MESSAGE_STATUS_HANDLER_LAMBDA_URL = aws_lambda_function_url.message_status_handler_url.function_url
 
       PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED = "true"
       PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "debug"

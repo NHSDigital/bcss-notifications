@@ -65,10 +65,10 @@ def send_status_callbacks(message):
 
 def post_callback(post_body):
     client_endpoint = "http://localhost:9001/2015-03-31/functions/function/invocations"
-    signature_secret = f"{os.getenv('APPLICATION_ID')}.{os.getenv('API_KEY')}"
+    signature_secret = f"{os.getenv('APPLICATION_ID')}.{os.getenv('OAUTH_API_KEY')}"
     headers = {
         "Content-Type": "application/json",
-        "x-api-key": os.getenv("API_KEY"),
+        "x-api-key": os.getenv("OAUTH_API_KEY"),
         "x-hmac-sha256-signature": create_digest(signature_secret, json.dumps(post_body, sort_keys=True))
     }
     # Emulate an AWS Lambda function URL payload structure

@@ -65,8 +65,8 @@ def verify_data(data: dict) -> bool:
     return False
 
 
-def notify_api_key() -> str:
-    return os.getenv('API_KEY')
+def notify_api_key() -> str | None:
+    return os.getenv('OAUTH_API_KEY')
 
 
 def signature_secret() -> str:

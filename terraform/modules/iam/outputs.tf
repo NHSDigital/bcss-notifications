@@ -9,3 +9,7 @@ output "message_status_handler_lambda_role_arn" {
 output "healthcheck_lambda_role_arn" {
   value = aws_iam_role.healthcheck_lambda_role.arn
 }
+
+output "callback_simulator_lambda_role_arn" {
+  value = aws_iam_role.callback_simulator_lambda_role.arn
+}
