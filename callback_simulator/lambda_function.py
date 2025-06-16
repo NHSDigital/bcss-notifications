@@ -14,14 +14,28 @@ def lambda_handler(_event, _context):
     environment.seed()
 
     logging.info("Sending message status callbacks")
-    responses = send_status_callbacks()
-    logging.info("Sent %d message status callbacks", len(responses))
+
+    send_status_callbacks()
+
+    time.sleep(2)
+
+    results = []
+
+    with database.cursor() as cursor:
+        cursor.execute(
+            "SELECT message_id "
+            "FROM v_notify_message_queue "
+            "WHERE message_status = 'read'"
+        )
+        results = cursor.fetchall()
+
+    message = f"{len(results)} message status callbacks sent" if results else "No message status callbacks sent"
 
     return {
         "status": 200,
         "body": json.dumps({
-            "message": "Message status callbacks sent successfully",
-            "responses": responses
+            "message": message,
+            "results": [{"message_id": r[0], "message_status": "read"} for r in results]
         })
     }
 
@@ -38,16 +52,10 @@ def send_status_callbacks():
 
         results = cursor.fetchall()
 
-    responses = []
-
     for r in results:
         response = post_callback(channel_status({"id": uid(27), "messageReference": r[0]}))
         if response.status_code != 200:
             logging.error("Failed to post callback for message %s: %s", r[0], response.text)
-
-        responses.append(response.json())
-
-    return responses
 
 
 def post_callback(post_body):
@@ -57,11 +65,11 @@ def post_callback(post_body):
         "x-api-key": os.getenv("OAUTH_API_KEY"),
         "x-hmac-sha256-signature": create_digest(json.dumps(post_body, sort_keys=True))
     }
-    response = requests.post(endpoint, headers=headers, json=post_body)
+    response = requests.post(endpoint, headers=headers, json=post_body, timeout=15)
     logging.debug("Response from callback: %s: %s", response.status_code, response.text)
 
     if not response or response.status_code != 200:
-        raise Exception(f"Failed to post callback: {response.status_code} - {response.text}")
+        raise Exception(f"Failed to post callback: {response.status_code} - {response.text}") #  pylint: disable=broad-exception-raised
 
     return response
 
