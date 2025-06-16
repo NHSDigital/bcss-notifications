@@ -39,6 +39,11 @@ variable "healthcheck_lambda_role_arn" {
   description = "ARN for the healthcheck lambda role"
 }
 
+variable "callback_simulator_lambda_role_arn" {
+  type        = string
+  description = "ARN for the healthcheck lambda role"
+}
+
 variable "parameters_and_secrets_lambda_extension_arn" {
   type        = string
   description = "ARN for the parameters and secrets lambda extension"

@@ -266,3 +266,54 @@ resource "aws_iam_role_policy_attachment" "healthcheck_lambda_kms_access" {
   role       = aws_iam_role.healthcheck_lambda_role.name
   policy_arn = aws_iam_policy.healthcheck_kms_policy.arn
 }
+
+resource "aws_iam_role" "callback_simulator_lambda_role" {
+  name = "${var.team}-${var.project}-callback-simulator-lambda-role-${var.environment}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "callback_simulator_lambda_role_policy_attachment" {
+  role       = aws_iam_role.callback_simulator_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy_attachment" "callback_simulator_lambda_role_vpc_access_policy_attachment" {
+  role       = aws_iam_role.callback_simulator_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
+resource "aws_iam_policy" "callback_simulator_secretsmanager_policy" {
+  name   = "${var.team}-${var.project}-callback-simulator-secretsmanager-policy-${var.environment}"
+  policy = data.aws_iam_policy_document.lambda_secretsmanager_policy_document.json
+  tags   = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "callback_simulator_lambda_secretsmanager_access" {
+  role       = aws_iam_role.callback_simulator_lambda_role.name
+  policy_arn = aws_iam_policy.callback_simulator_secretsmanager_policy.arn
+}
+
+resource "aws_iam_policy" "callback_simulator_kms_policy" {
+  name   = "${var.team}-${var.project}-callback-simulator-kms-policy-${var.environment}"
+  policy = data.aws_iam_policy_document.lambda_kms_policy_document.json
+  tags   = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "callback_simulator_lambda_kms_access" {
+  role       = aws_iam_role.callback_simulator_lambda_role.name
+  policy_arn = aws_iam_policy.callback_simulator_kms_policy.arn
+}
