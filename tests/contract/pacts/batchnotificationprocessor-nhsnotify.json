@@ -1,9 +1,9 @@
 {
   "consumer": {
-    "name": "MessageStatusHandler"
+    "name": "BatchNotificationProcessor"
   },
   "provider": {
-    "name": "CommunicationManagement"
+    "name": "NHSNotify"
   },
   "interactions": [
     {
@@ -11,7 +11,7 @@
       "providerState": "There are messages to send",
       "request": {
         "method": "POST",
-        "path": "/message/batch"
+        "path": "/comms/v1/message-batches"
       },
       "response": {
         "status": 201,

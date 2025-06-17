@@ -1,14 +1,14 @@
 from pact import Consumer, Provider, Term
 from pact.matchers import get_generated_values
 import pytest
-import communication_management
+import notify_api
 from recipient import Recipient
 
 
 @pytest.fixture
 def send_batch_pact():
-    pact = Consumer("MessageStatusHandler").has_pact_with(
-        Provider("CommunicationManagement"),
+    pact = Consumer("BatchNotificationProcessor").has_pact_with(
+        Provider("NHSNotify"),
         pact_dir="tests/contract/pacts",
     )
     pact.start_service()
@@ -17,7 +17,7 @@ def send_batch_pact():
 
 
 def test_send_batch_message(send_batch_pact, monkeypatch):
-    monkeypatch.setenv("COMMGT_BASE_URL", send_batch_pact.uri)
+    monkeypatch.setenv("NOTIFY_API_BASE_URL", send_batch_pact.uri)
     monkeypatch.setenv("API_KEY", "test_api_key")
 
     expected_reponse = {
@@ -50,11 +50,11 @@ def test_send_batch_message(send_batch_pact, monkeypatch):
 
     (send_batch_pact.given("There are messages to send")
         .upon_receiving("A request to send a batch message")
-        .with_request("POST", "/message/batch")
+        .with_request("POST", "/comms/v1/message-batches")
         .will_respond_with(201, body=expected_reponse))
 
     with send_batch_pact:
-        response = communication_management.send_batch_message(
+        response = notify_api.send_batch_message(
             batch_id="da0b1495-c7cb-468c-9d81-07dee089d728",
             routing_config_id="2HL3qFTEFM0qMY8xjRbt1LIKCzM",
             recipients=[
