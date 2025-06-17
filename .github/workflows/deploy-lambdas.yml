@@ -61,6 +61,16 @@ jobs:
             --zip-file fileb://layer.zip \
             --compatible-runtimes python3.13 \
             --region eu-west-2
+      - name: Get latest layer version for BCSS Notify Lambdas
+        id: get_latest_layer_version
+        run: |
+          LATEST_LAYER_VERSION_ARN=$(aws lambda list-layer-versions \
+            --layer-name bcss-comms-python-packages-dev \
+            --query 'LayerVersions[0].LayerVersionArn' \
+            --output text \
+            --region eu-west-2)
+          echo "LATEST_LAYER_VERSION_ARN=$LATEST_LAYER_VERSION_ARN" >> $GITHUB_ENV
+          echo "SECRETS_EXTENSION_ARN=arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:12" >> $GITHUB_ENV
       - name: Create zip file for Batch Notification Processor function
         run: cd batch_notification_processor && cp ../shared/*.py . && zip -r code.zip ./*.py
       - name: Update Batch Notification Processor lambda function code
@@ -68,6 +78,12 @@ jobs:
           aws lambda update-function-code \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-batch-notification-processor-dev \
             --zip-file fileb://batch_notification_processor/code.zip \
+            --region eu-west-2
+      - name: Update Batch Notification Processor lambda function configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-batch-notification-processor-dev \
+            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }} \ 
             --region eu-west-2
       - name: Create zip file for Message Status Handler function
         run: cd message_status_handler && cp ../shared/*.py . && zip -r code.zip ./*.py
@@ -77,6 +93,12 @@ jobs:
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-message-status-handler-dev \
             --zip-file fileb://message_status_handler/code.zip \
             --region eu-west-2
+      - name: Update Message Status Handler lambda function update-function-configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-message-status-handler-dev \
+            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }} \ 
+            --region eu-west-2
       - name: Create zip file for Healthcheck function
         run: cd healthcheck && cp ../shared/*.py . && zip -r code.zip ./*.py
       - name: Update Healthcheck lambda function code
@@ -85,6 +107,12 @@ jobs:
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-healthcheck-dev \
             --zip-file fileb://healthcheck/code.zip \
             --region eu-west-2
+      - name: Update Healthcheck lambda function update-function-configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-healthcheck-dev \
+            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }} \ 
+            --region eu-west-2
       - name: Create zip file for Callback Simulator function
         run: cd callback_simulator && cp ../shared/*.py . && zip -r code.zip ./*.py
       - name: Update Callback Simulator lambda function code
@@ -92,4 +120,10 @@ jobs:
           aws lambda update-function-code \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-callback-simulator-dev \
             --zip-file fileb://callback_simulator/code.zip \
+            --region eu-west-2
+      - name: Update Callback Simulator lambda function update-function-configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-callback-simulator-dev \
+            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }} \ 
             --region eu-west-2
