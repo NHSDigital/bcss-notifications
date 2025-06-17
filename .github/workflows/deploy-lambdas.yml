@@ -83,8 +83,8 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-batch-notification-processor-dev \
-            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }} \ 
-            --region eu-west-2
+            --region eu-west-2 \
+            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
       - name: Create zip file for Message Status Handler function
         run: cd message_status_handler && cp ../shared/*.py . && zip -r code.zip ./*.py
       - name: Update Message Status Handler lambda function code
@@ -97,8 +97,8 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-message-status-handler-dev \
-            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }} \ 
-            --region eu-west-2
+            --region eu-west-2 \
+            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
       - name: Create zip file for Healthcheck function
         run: cd healthcheck && cp ../shared/*.py . && zip -r code.zip ./*.py
       - name: Update Healthcheck lambda function code
@@ -111,8 +111,8 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-healthcheck-dev \
-            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }} \ 
-            --region eu-west-2
+            --region eu-west-2 \
+            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
       - name: Create zip file for Callback Simulator function
         run: cd callback_simulator && cp ../shared/*.py . && zip -r code.zip ./*.py
       - name: Update Callback Simulator lambda function code
@@ -125,5 +125,5 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-callback-simulator-dev \
-            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }} \ 
-            --region eu-west-2
+            --region eu-west-2 \
+            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
