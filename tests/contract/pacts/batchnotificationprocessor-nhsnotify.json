@@ -1,6 +1,6 @@
 {
   "consumer": {
-    "name": "MessageStatusHandler"
+    "name": "BatchNotificationProcessor"
   },
   "provider": {
     "name": "NHSNotify"

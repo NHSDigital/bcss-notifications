@@ -7,7 +7,7 @@ from recipient import Recipient
 
 @pytest.fixture
 def send_batch_pact():
-    pact = Consumer("MessageStatusHandler").has_pact_with(
+    pact = Consumer("BatchNotificationProcessor").has_pact_with(
         Provider("NHSNotify"),
         pact_dir="tests/contract/pacts",
     )
