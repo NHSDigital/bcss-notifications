@@ -31,27 +31,27 @@ jobs:
       - name: "run unit testing:"
         run: |
           ./test-unit.sh
-#  contract-tests:
-#    name: "Contract tests"
-#    runs-on: ubuntu-latest
-#    timeout-minutes: 5
-#    steps:
-#      - name: "Install Python"
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: "3.13"
-#
-#      - name: "Checkout code"
-#        uses: actions/checkout@v4
-#
-#      - name: "Install dependencies"
-#        run: |
-#          pip install poetry
-#          poetry install --no-root
-#
-#      - name: "Run contract tests"
-#        run: |
-#          ./test-contract.sh
+  contract-tests:
+    name: "Contract tests"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Install Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: "Checkout code"
+        uses: actions/checkout@v4
+
+      - name: "Install dependencies"
+        run: |
+          pip install poetry
+          poetry install --no-root
+
+      - name: "Run contract tests"
+        run: |
+          ./test-contract.sh
   integration-tests:
     name: "Integration tests"
     runs-on: ubuntu-latest
