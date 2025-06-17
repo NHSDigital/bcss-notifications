@@ -17,7 +17,9 @@ def lambda_handler(event: Any, _context: Any) -> Dict[str, Any]:
         json_body = json.loads(body)
 
         if request_verifier.verify_request(headers, json_body):
+            logging.info("Callback request verification successful.")
             bcss_response_codes = message_status_recorder.record_message_statuses(json_body)
+            logging.info("Message statuses recorded successfully. Response codes: %s", bcss_response_codes)
             result = {"bcss_response_codes": bcss_response_codes}
 
         return {
