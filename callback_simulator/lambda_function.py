@@ -15,32 +15,21 @@ def lambda_handler(_event, _context):
 
     logging.info("Sending message status callbacks")
 
-    send_status_callbacks()
+    responses = send_status_callbacks()
 
-    time.sleep(2)
-
-    results = []
-
-    with database.cursor() as cursor:
-        cursor.execute(
-            "SELECT message_id "
-            "FROM v_notify_message_queue "
-            "WHERE message_status = 'read'"
-        )
-        results = cursor.fetchall()
-
-    message = f"{len(results)} message status callbacks sent" if results else "No message status callbacks sent"
+    logging.info("Message status callbacks sent: %s", responses)
 
     return {
         "status": 200,
         "body": json.dumps({
-            "message": message,
-            "results": [{"message_id": r[0], "message_status": "read"} for r in results]
+            "callback_responses": responses,
         })
     }
 
 
 def send_status_callbacks():
+    responses = []
+
     with database.cursor() as cursor:
         cursor.execute(
             (
@@ -54,8 +43,12 @@ def send_status_callbacks():
 
     for r in results:
         response = post_callback(channel_status({"id": uid(27), "messageReference": r[0]}))
+        responses.append((r[0], response.status_code, response.text))
+
         if response.status_code != 200:
             logging.error("Failed to post callback for message %s: %s", r[0], response.text)
+
+    return responses
 
 
 def post_callback(post_body):

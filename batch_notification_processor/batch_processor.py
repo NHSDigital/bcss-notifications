@@ -6,10 +6,6 @@ import oracledb
 import oracle_database
 
 
-class RecipientsNotFoundError(Exception):
-    """Raised when no recipients are found for the batch"""
-
-
 def next_batch() -> tuple:
     """
     Fetch the next batch ID and routing plan ID.

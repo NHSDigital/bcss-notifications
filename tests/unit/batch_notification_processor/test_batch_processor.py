@@ -1,5 +1,4 @@
 import batch_processor
-from batch_processor import RecipientsNotFoundError
 from recipient import Recipient
 import pytest
 import re
