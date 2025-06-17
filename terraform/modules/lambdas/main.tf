@@ -1,30 +1,26 @@
 locals {
   runtime = "python3.13"
   secrets = var.secrets
-
-  build_trigger = sha256(timestamp())
 }
 
-resource "null_resource" "batch_notification_processor_lambda_zip" {
-  provisioner "local-exec" {
-    command     = "./build.sh batch_notification_processor"
-    working_dir = path.module
-  }
-  triggers = {
-    always_run = local.build_trigger
+data "archive_file" "placeholder_zip" {
+  type        = "zip"
+  output_path = "${path.module}/placeholder.zip"
+
+  source {
+    content  = "placeholder"
+    filename = "placeholder.txt"
   }
 }
 
 resource "aws_lambda_function" "batch_notification_processor" {
-  depends_on       = [null_resource.batch_notification_processor_lambda_zip]
-  filename         = "${path.module}/batch_notification_processor.zip"
-  function_name    = "${var.team}-${var.project}-batch-notification-processor-${var.environment}"
-  handler          = "lambda_function.lambda_handler"
-  memory_size      = 256
-  role             = var.batch_notification_processor_lambda_role_arn
-  runtime          = local.runtime
-  source_code_hash = local.build_trigger
-  timeout          = 300
+  filename      = data.archive_file.placeholder_zip.output_path
+  function_name = "${var.team}-${var.project}-batch-notification-processor-${var.environment}"
+  handler       = "lambda_function.lambda_handler"
+  memory_size   = 128
+  role          = var.batch_notification_processor_lambda_role_arn
+  runtime       = local.runtime
+  timeout       = 300
 
   logging_config {
     application_log_level = "INFO"
@@ -61,26 +57,14 @@ resource "aws_lambda_function" "batch_notification_processor" {
   tags = var.tags
 }
 
-resource "null_resource" "message_status_handler_lambda_zip" {
-  provisioner "local-exec" {
-    command     = "./build.sh message_status_handler"
-    working_dir = path.module
-  }
-  triggers = {
-    always_run = local.build_trigger
-  }
-}
-
 resource "aws_lambda_function" "message_status_handler" {
-  depends_on       = [null_resource.message_status_handler_lambda_zip]
-  filename         = "${path.module}/message_status_handler.zip"
-  function_name    = "${var.team}-${var.project}-message-status-handler-${var.environment}"
-  handler          = "callback_lambda_function.lambda_handler"
-  memory_size      = 128
-  role             = var.message_status_handler_lambda_role_arn
-  runtime          = local.runtime
-  source_code_hash = local.build_trigger
-  timeout          = 300
+  filename      = data.archive_file.placeholder_zip.output_path
+  function_name = "${var.team}-${var.project}-message-status-handler-${var.environment}"
+  handler       = "callback_lambda_function.lambda_handler"
+  memory_size   = 128
+  role          = var.message_status_handler_lambda_role_arn
+  runtime       = local.runtime
+  timeout       = 300
 
   logging_config {
     application_log_level = "INFO"
@@ -136,26 +120,14 @@ resource "aws_lambda_permission" "allow_sqs_to_call_lambda" {
   source_arn    = var.sqs_queue_arn
 }
 
-resource "null_resource" "healthcheck_lambda_zip" {
-  provisioner "local-exec" {
-    command     = "./build.sh healthcheck"
-    working_dir = path.module
-  }
-  triggers = {
-    always_run = local.build_trigger
-  }
-}
-
 resource "aws_lambda_function" "healthcheck" {
-  depends_on       = [null_resource.healthcheck_lambda_zip]
-  filename         = "${path.module}/healthcheck.zip"
-  function_name    = "${var.team}-${var.project}-healthcheck-${var.environment}"
-  handler          = "lambda_function.lambda_handler"
-  memory_size      = 128
-  role             = var.healthcheck_lambda_role_arn
-  runtime          = local.runtime
-  source_code_hash = local.build_trigger
-  timeout          = 300
+  filename      = data.archive_file.placeholder_zip.output_path
+  function_name = "${var.team}-${var.project}-healthcheck-${var.environment}"
+  handler       = "lambda_function.lambda_handler"
+  memory_size   = 128
+  role          = var.healthcheck_lambda_role_arn
+  runtime       = local.runtime
+  timeout       = 300
 
   logging_config {
     application_log_level = "INFO"
@@ -189,26 +161,14 @@ resource "aws_lambda_function" "healthcheck" {
   tags = var.tags
 }
 
-resource "null_resource" "callback_simulator_lambda_zip" {
-  provisioner "local-exec" {
-    command     = "./build.sh callback_simulator"
-    working_dir = path.module
-  }
-  triggers = {
-    always_run = local.build_trigger
-  }
-}
-
 resource "aws_lambda_function" "callback_simulator" {
-  depends_on       = [null_resource.callback_simulator_lambda_zip]
-  filename         = "${path.module}/callback_simulator.zip"
-  function_name    = "${var.team}-${var.project}-callback-simulator-${var.environment}"
-  handler          = "lambda_function.lambda_handler"
-  memory_size      = 128
-  role             = var.callback_simulator_lambda_role_arn
-  runtime          = local.runtime
-  source_code_hash = local.build_trigger
-  timeout          = 300
+  filename      = data.archive_file.placeholder_zip.output_path
+  function_name = "${var.team}-${var.project}-callback-simulator-${var.environment}"
+  handler       = "lambda_function.lambda_handler"
+  memory_size   = 128
+  role          = var.callback_simulator_lambda_role_arn
+  runtime       = local.runtime
+  timeout       = 300
 
   logging_config {
     application_log_level = "INFO"
