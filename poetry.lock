@@ -66,6 +66,18 @@ tests = ["cloudpickle ; platform_python_implementation == \"CPython\"", "hypothe
 tests-mypy = ["mypy (>=1.11.1) ; platform_python_implementation == \"CPython\" and python_version >= \"3.10\"", "pytest-mypy-plugins ; platform_python_implementation == \"CPython\" and python_version >= \"3.10\""]
 
 [[package]]
+name = "aws-lambda-typing"
+version = "2.20.0"
+description = "A package that provides type hints for AWS Lambda event, context and response objects"
+optional = false
+python-versions = "<4.0,>=3.6"
+groups = ["main"]
+files = [
+    {file = "aws-lambda-typing-2.20.0.tar.gz", hash = "sha256:78b0d8ebab73b3a6b0da98a7969f4e9c4bb497298ec50f3217da8a8dfba17154"},
+    {file = "aws_lambda_typing-2.20.0-py3-none-any.whl", hash = "sha256:1d44264cabfeab5ac38e67ddd0c874e677b2cbbae77a42d0519df470e6bbb49b"},
+]
+
+[[package]]
 name = "boto3"
 version = "1.38.21"
 description = "The AWS SDK for Python"
@@ -1845,5 +1857,5 @@ propcache = ">=0.2.1"
 
 [metadata]
 lock-version = "2.1"
-python-versions = ">=3.13"
-content-hash = "048cfd92c254de1a4a3520ebbc98af92fb269ece110184ab8217cb86b7a5bd69"
+python-versions = ">=3.13,<4.0"
+content-hash = "b09575956f6386cb69abd9e880fff8303d9c858257ff717ce05e02ea1c48b29b"
