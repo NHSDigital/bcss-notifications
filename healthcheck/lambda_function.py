@@ -26,12 +26,15 @@ def lambda_handler(_event, _context):
 
         cursor.execute(
             """
-            SELECT COUNT(*) FROM v_notify_message_queue
+            SELECT nhs_number, message_id, message_status FROM v_notify_message_queue
             """
         )
-        result = cursor.fetchone()
+        results = cursor.fetchall()
 
-        logging.info("Database query results (number of queued recipients): %s", result[0])
+        logging.info("Database query results:")
+        for result in results:
+            logging.info("NHS Number: %s, Message ID: %s, Message Status: %s", result[0], result[1], result[2])
+
         logging.info("Database check complete")
 
     # OAuth check
