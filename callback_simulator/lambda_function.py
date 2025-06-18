@@ -58,7 +58,7 @@ def post_callback(post_body):
         "x-api-key": os.getenv("OAUTH_API_KEY"),
         "x-hmac-sha256-signature": create_digest(json.dumps(post_body, sort_keys=True))
     }
-    response = requests.post(url=endpoint, headers=headers, json=post_body, timeout=15) # pylint: disable=reportArgumentType
+    response = requests.post(url=endpoint, headers=headers, json=post_body, timeout=15)
     logging.debug("Response from callback: %s: %s", response.status_code, response.text)
 
     if not response or response.status_code != 200:
