@@ -7,6 +7,7 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.13"
+
 packages = [
     {include = "batch_notification_processor"},
     {include = "messsage_status_handler"},
@@ -35,7 +36,9 @@ dependencies = [
     "tomlkit (>=0.13.2,<0.14.0)",
     "urllib3 (>=2.4.0,<3.0.0)",
     "boto3 (>=1.38.21,<2.0.0)",
-    "virtualenv (>=20.31.2,<21.0.0)"
+    "virtualenv (>=20.31.2,<21.0.0)",
+    "pyright (>=1.1.402,<2.0.0)",
+    "aws-lambda-typing (>=2.20.0,<3.0.0)"
 ]
 
 [build-system]
@@ -51,3 +54,6 @@ pytest-mock = "^3.14.1"
 jsonschema = "^4.24.0"
 pylint = "^3.3.7"
 pact-python = "^2.3.1"
+
+[tool.poetry.dependencies]
+python = ">=3.13,<4.0"

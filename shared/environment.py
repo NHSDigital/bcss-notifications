@@ -22,7 +22,7 @@ class FetchSecretsError(BaseException):
     """Custom exception for fetch secrets errors."""
 
 
-def seed():
+def seed() -> None:
     if os.getenv("SECRET_ARN") and not bool(os.getenv("ENVIRONMENT_SEEDED")):
         headers = {"X-Aws-Parameters-Secrets-Token": os.getenv('AWS_SESSION_TOKEN')}
         endpoint = f"http://localhost:2773/secretsmanager/get?secretId={os.getenv('SECRET_ARN')}&versionStage=AWSCURRENT"

@@ -3,10 +3,10 @@ import json
 import logging
 import message_status_recorder
 import request_verifier
-from typing import Dict, Any
+from aws_lambda_typing.events import S3Event
+from aws_lambda_typing.context import Context
 
-
-def lambda_handler(event: Any, _context: Any) -> Dict[str, Any]:
+def lambda_handler(event: S3Event, _context: Context) -> dict:
     logging.info("Message status handler lambda has started. Event: %s", event)
     environment.seed()
     result = {}

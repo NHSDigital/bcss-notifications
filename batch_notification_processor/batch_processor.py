@@ -27,11 +27,11 @@ def next_batch() -> tuple:
         return None, None, None
 
 
-def get_routing_plan_id(batch_id):
+def get_routing_plan_id(batch_id: str) -> str | None:
     return oracle_database.get_routing_plan_id(batch_id)
 
 
-def get_recipients(batch_id):
+def get_recipients(batch_id: str) -> list:
     recipients = []
     recipients_results = []
 
@@ -50,7 +50,7 @@ def get_recipients(batch_id):
     return recipients
 
 
-def mark_batch_as_sent(batch_id):
+def mark_batch_as_sent(batch_id: str) -> None:
     oracle_database.mark_batch_as_sent(batch_id)
 
 

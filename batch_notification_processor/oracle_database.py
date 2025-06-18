@@ -5,7 +5,7 @@ import database
 from recipient import Recipient
 
 
-def get_routing_plan_id(batch_id: str):
+def get_routing_plan_id(batch_id: str) -> str | None:
     with database.cursor() as cursor:
         try:
             result = cursor.callfunc("PKG_NOTIFY_WRAP.f_get_next_batch", oracledb.STRING, [batch_id])
@@ -46,7 +46,7 @@ def get_recipients(batch_id: str) -> list[Recipient]:
     return [Recipient(*rd) for rd in recipient_data]
 
 
-def mark_batch_as_sent(batch_id: str):
+def mark_batch_as_sent(batch_id: str) -> int:
     with database.cursor() as cursor:
         try:
             result = cursor.callfunc(
@@ -62,7 +62,7 @@ def mark_batch_as_sent(batch_id: str):
             raise
 
 
-def update_message_id(recipient: Recipient):
+def update_message_id(recipient: Recipient) -> None:
     with database.cursor() as cursor:
         try:
             cursor.execute(

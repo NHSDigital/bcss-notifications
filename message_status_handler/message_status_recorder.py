@@ -1,7 +1,8 @@
 import database
+from oracledb import Cursor
 
 
-def record_message_statuses(json_data: dict):
+def record_message_statuses(json_data: dict) -> list[int]:
     response_codes = []
     for data in json_data.get('data', [{}]):
         response_code = record_message_status(data)
@@ -10,7 +11,7 @@ def record_message_statuses(json_data: dict):
     return response_codes
 
 
-def record_message_status(json_data: dict):
+def record_message_status(json_data: dict) -> int:
     response_code = 0
     message_reference = json_data.get('attributes', {}).get('messageReference')
 
@@ -23,7 +24,7 @@ def record_message_status(json_data: dict):
     return response_code
 
 
-def fetch_batch_id_for_message(cursor, message_reference: str):
+def fetch_batch_id_for_message(cursor: Cursor, message_reference: str) -> str | None:
     cursor.execute(
         (
             "SELECT batch_id FROM v_notify_message_queue "
@@ -37,7 +38,7 @@ def fetch_batch_id_for_message(cursor, message_reference: str):
     return result[0] if result else None
 
 
-def update_message_status(cursor, batch_id: str, message_reference: str):
+def update_message_status(cursor: Cursor, batch_id: str, message_reference: str) -> int:
     var = cursor.var(int)
 
     cursor.execute(

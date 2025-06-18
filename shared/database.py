@@ -1,7 +1,11 @@
 from contextlib import contextmanager
 import logging
+from typing import Any, Generator
+
 import oracledb
 import os
+
+from oracledb import Cursor, Connection
 
 
 class DatabaseError(Exception):
@@ -9,7 +13,7 @@ class DatabaseError(Exception):
 
 
 @contextmanager
-def connection():
+def connection() -> Generator[Connection, Any, None]:
     try:
         conn = oracledb.connect(**connection_params())
         try:
@@ -22,7 +26,7 @@ def connection():
 
 
 @contextmanager
-def cursor():
+def cursor() -> Generator[Cursor, Any, None]:
     with connection() as conn:
         cur = conn.cursor()
         try:
