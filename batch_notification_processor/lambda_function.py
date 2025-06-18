@@ -4,8 +4,11 @@ import batch_processor
 import environment
 import logging
 import notify_api
+from aws_lambda_typing.events import S3Event
+from aws_lambda_typing.context import Context
 
-def lambda_handler(_event: dict, _context: object) -> dict:
+
+def lambda_handler(_event: S3Event, _context: Context) -> dict:
     """
     AWS Lambda handler to process and send batch notifications.
     """
