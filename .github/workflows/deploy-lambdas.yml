@@ -85,6 +85,7 @@ jobs:
           aws lambda update-function-code \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-batch-notification-processor-dev \
             --zip-file fileb://batch_notification_processor/code.zip \
+            --description "aws:states:opt-out" \
             --region eu-west-2
       - name: Update Message Status Handler lambda function update-function-configuration
         run: |
@@ -100,6 +101,7 @@ jobs:
           aws lambda update-function-code \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-message-status-handler-dev \
             --zip-file fileb://message_status_handler/code.zip \
+            --description "aws:states:opt-out" \
             --region eu-west-2
       - name: Update Healthcheck lambda function update-function-configuration
         run: |
@@ -115,6 +117,7 @@ jobs:
           aws lambda update-function-code \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-healthcheck-dev \
             --zip-file fileb://healthcheck/code.zip \
+            --description "aws:states:opt-out" \
             --region eu-west-2
       - name: Update Callback Simulator lambda function update-function-configuration
         run: |
@@ -130,4 +133,5 @@ jobs:
           aws lambda update-function-code \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-callback-simulator-dev \
             --zip-file fileb://callback_simulator/code.zip \
+            --description "aws:states:opt-out" \
             --region eu-west-2
