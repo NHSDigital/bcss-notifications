@@ -75,6 +75,7 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-batch-notification-processor-dev \
+            --description "aws:states:opt-out" \
             --region eu-west-2 \
             --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
       - name: Create zip file for Batch Notification Processor function
@@ -89,6 +90,7 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-message-status-handler-dev \
+            --description "aws:states:opt-out" \
             --region eu-west-2 \
             --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
       - name: Create zip file for Message Status Handler function
@@ -103,6 +105,7 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-healthcheck-dev \
+            --description "aws:states:opt-out" \
             --region eu-west-2 \
             --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
       - name: Create zip file for Healthcheck function
@@ -117,6 +120,7 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-callback-simulator-dev \
+            --description "aws:states:opt-out" \
             --region eu-west-2 \
             --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
       - name: Create zip file for Callback Simulator function
