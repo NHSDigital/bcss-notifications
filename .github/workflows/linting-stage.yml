@@ -46,4 +46,5 @@ jobs:
       - run: echo "$(poetry env info --path)/bin" >> $GITHUB_PATH
 
       - name: "Run Pyright"
-        uses: jakebailey/pyright-action@v2
+        run: |
+          ./pyright.sh
