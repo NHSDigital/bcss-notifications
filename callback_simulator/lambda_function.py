@@ -52,13 +52,13 @@ def send_status_callbacks():
 
 
 def post_callback(post_body):
-    endpoint = os.getenv('MESSAGE_STATUS_HANDLER_LAMBDA_URL')
+    endpoint = os.getenv('MESSAGE_STATUS_HANDLER_LAMBDA_URL') or ''
     headers = {
         "Content-Type": "application/json",
         "x-api-key": os.getenv("OAUTH_API_KEY"),
         "x-hmac-sha256-signature": create_digest(json.dumps(post_body, sort_keys=True))
     }
-    response = requests.post(endpoint, headers=headers, json=post_body, timeout=15)
+    response = requests.post(url=endpoint, headers=headers, json=post_body, timeout=15) # pylint: disable=reportArgumentType
     logging.debug("Response from callback: %s: %s", response.status_code, response.text)
 
     if not response or response.status_code != 200:
