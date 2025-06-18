@@ -31,14 +31,19 @@ jobs:
           ./lint.sh
 
   pyright:
-    - uses: actions/checkout@v3
+    - name: "Pyright"
+      runs-on: ubuntu-latest
+      needs: linting
+      steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v4
 
-    - run: pipx install poetry
-    - uses: actions/setup-python@v4
-      with:
-        cache: 'poetry'
+      - name: "Install dependencies"
+        run: |
+          pip install poetry
+          poetry install --no-root
 
-    - run: poetry install
-    - run: echo "$(poetry env info --path)/bin" >> $GITHUB_PATH
+      - run: echo "$(poetry env info --path)/bin" >> $GITHUB_PATH
 
-    - uses: jakebailey/pyright-action@v2
+      - name: "Run Pyright"
+        uses: jakebailey/pyright-action@v2
