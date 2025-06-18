@@ -1,4 +1,5 @@
 import access_token
+import logging
 import os
 import uuid
 from recipient import Recipient
@@ -29,6 +30,8 @@ def send_batch_message(
         json=request_body,
         timeout=10
     )
+
+    logging.info("Response from NHS Notify API: %s", response.status_code)
 
     return response
 

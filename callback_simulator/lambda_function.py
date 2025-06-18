@@ -43,10 +43,14 @@ def send_status_callbacks():
 
     for r in results:
         response = post_callback(channel_status({"id": uid(27), "messageReference": r[0]}))
-        responses.append((r[0], response.status_code, response.text))
+
+        text = "Success"
 
         if response.status_code != 200:
+            text = response.text
             logging.error("Failed to post callback for message %s: %s", r[0], response.text)
+
+        responses.append((r[0], response.status_code, text))
 
     return responses
 

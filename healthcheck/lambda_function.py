@@ -26,12 +26,15 @@ def lambda_handler(_event, _context):
 
         cursor.execute(
             """
-            SELECT COUNT(*) FROM v_notify_message_queue
+            SELECT nhs_number, message_id, message_status FROM v_notify_message_queue
             """
         )
-        result = cursor.fetchone()
+        results = cursor.fetchall()
 
-        logging.info("Database query results (number of queued recipients): %s", result[0])
+        logging.info("Database query results:")
+        for result in results:
+            logging.info("NHS Number: %s, Message ID: %s, Message Status: %s", result[0], result[1], result[2])
+
         logging.info("Database check complete")
 
     # OAuth check
@@ -41,7 +44,7 @@ def lambda_handler(_event, _context):
 
     logging.info("Healthcheck lambda check #4: Make request to NHS Notify API")
     response = requests.get(
-        f"{os.getenv('NOTIFY_API_BASE_URL')}/comms/v1/messages/2WL3qFTEFM0qMY8xjRbt1LIKCzM",
+        f"{os.getenv('NOTIFY_API_BASE_URL')}/comms/v1/messages/2ygbXdWtsfDXhZ6D7DNU42RK3Ty",
         headers={"Accept": "application/vnd.api+json", "Authorization": f"Bearer {token}"},
         timeout=20
     )
