@@ -13,14 +13,14 @@ on:
     paths:
       - "batch_notification_processor/**"
       - "message_status_handler/**"
+      - "healthcheck/**"
+      - "callback_simulator/**"
       - "shared/**"
-      - "pyproject.toml"
-      - "poetry.lock"
     branches: [main]
 
 jobs:
   deploy-bcss-notify-lambdas:
-    name: "Deploy lambdas and layers"
+    name: "Deploy BCSS Notify lambdas"
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -40,44 +40,6 @@ jobs:
           python-version: '3.13' 
       - name: Install zip tool
         uses: montudor/action-zip@v1
-      - name: Create zip file for packages layer
-        run: |
-          pip install poetry
-          pip install poetry-plugin-export
-          mkdir -p python
-          poetry env use system
-          poetry export --without-hashes --format=requirements.txt > requirements.txt
-          poetry run pip install -r requirements.txt --target python/
-          cd python
-          find -name "tests" -type d | xargs rm -rf
-          find -name "__pycache__" -type d | xargs rm -rf
-          find -name "_pytest" -type d | xargs rm -rf
-          cd ..
-          zip -r layer.zip python/
-      - name: Publish layer to AWS
-        run: |
-          aws lambda publish-layer-version \
-            --layer-name bcss-comms-python-packages-dev \
-            --zip-file fileb://layer.zip \
-            --compatible-runtimes python3.13 \
-            --region eu-west-2
-      - name: Get latest layer version ARN for BCSS Notify Lambdas
-        id: get_latest_layer_version_arn
-        run: |
-          LATEST_LAYER_VERSION_ARN=$(aws lambda list-layer-versions \
-            --layer-name bcss-comms-python-packages-dev \
-            --query 'LayerVersions[0].LayerVersionArn' \
-            --output text \
-            --region eu-west-2)
-          echo "LATEST_LAYER_VERSION_ARN=$LATEST_LAYER_VERSION_ARN" >> $GITHUB_ENV
-          echo "SECRETS_EXTENSION_ARN=arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:12" >> $GITHUB_ENV
-      - name: Update Batch Notification Processor lambda function configuration
-        run: |
-          aws lambda update-function-configuration \
-            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-batch-notification-processor-dev \
-            --description "aws:states:opt-out" \
-            --region eu-west-2 \
-            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
       - name: Create zip file for Batch Notification Processor function
         run: cd batch_notification_processor && cp ../shared/*.py . && zip -r code.zip ./*.py
       - name: Update Batch Notification Processor lambda function code
@@ -85,15 +47,7 @@ jobs:
           aws lambda update-function-code \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-batch-notification-processor-dev \
             --zip-file fileb://batch_notification_processor/code.zip \
-            --description "aws:states:opt-out" \
             --region eu-west-2
-      - name: Update Message Status Handler lambda function update-function-configuration
-        run: |
-          aws lambda update-function-configuration \
-            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-message-status-handler-dev \
-            --description "aws:states:opt-out" \
-            --region eu-west-2 \
-            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
       - name: Create zip file for Message Status Handler function
         run: cd message_status_handler && cp ../shared/*.py . && zip -r code.zip ./*.py
       - name: Update Message Status Handler lambda function code
@@ -101,15 +55,7 @@ jobs:
           aws lambda update-function-code \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-message-status-handler-dev \
             --zip-file fileb://message_status_handler/code.zip \
-            --description "aws:states:opt-out" \
             --region eu-west-2
-      - name: Update Healthcheck lambda function update-function-configuration
-        run: |
-          aws lambda update-function-configuration \
-            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-healthcheck-dev \
-            --description "aws:states:opt-out" \
-            --region eu-west-2 \
-            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
       - name: Create zip file for Healthcheck function
         run: cd healthcheck && cp ../shared/*.py . && zip -r code.zip ./*.py
       - name: Update Healthcheck lambda function code
@@ -117,15 +63,7 @@ jobs:
           aws lambda update-function-code \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-healthcheck-dev \
             --zip-file fileb://healthcheck/code.zip \
-            --description "aws:states:opt-out" \
             --region eu-west-2
-      - name: Update Callback Simulator lambda function update-function-configuration
-        run: |
-          aws lambda update-function-configuration \
-            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-callback-simulator-dev \
-            --description "aws:states:opt-out" \
-            --region eu-west-2 \
-            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
       - name: Create zip file for Callback Simulator function
         run: cd callback_simulator && cp ../shared/*.py . && zip -r code.zip ./*.py
       - name: Update Callback Simulator lambda function code
@@ -133,5 +71,4 @@ jobs:
           aws lambda update-function-code \
             --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-callback-simulator-dev \
             --zip-file fileb://callback_simulator/code.zip \
-            --description "aws:states:opt-out" \
             --region eu-west-2

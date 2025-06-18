@@ -1,0 +1,94 @@
+name: Deploy BCSS Notify Lambda layers
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        options:
+          - dev
+  push:
+    paths:
+      - "pyproject.toml"
+      - "poetry.lock"
+    branches: [main]
+
+jobs:
+  deploy-bcss-notify-lambdas:
+    name: "Deploy BCSS Notify lambda layers"
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::730319765130:role/bcss-github-actions-lambda-access
+          aws-region: eu-west-2
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13' 
+      - name: Install zip tool
+        uses: montudor/action-zip@v1
+      - name: Create zip file for packages layer
+        run: |
+          pip install poetry
+          pip install poetry-plugin-export
+          mkdir -p python
+          poetry env use system
+          poetry export --without-hashes --format=requirements.txt > requirements.txt
+          poetry run pip install -r requirements.txt --target python/
+          cd python
+          find -name "tests" -type d | xargs rm -rf
+          find -name "__pycache__" -type d | xargs rm -rf
+          find -name "_pytest" -type d | xargs rm -rf
+          cd ..
+          zip -r layer.zip python/
+      - name: Publish layer to AWS
+        run: |
+          aws lambda publish-layer-version \
+            --layer-name bcss-comms-python-packages-dev \
+            --zip-file fileb://layer.zip \
+            --compatible-runtimes python3.13 \
+            --region eu-west-2
+      - name: Get latest layer version ARN for BCSS Notify Lambdas
+        id: get_latest_layer_version_arn
+        run: |
+          LATEST_LAYER_VERSION_ARN=$(aws lambda list-layer-versions \
+            --layer-name bcss-comms-python-packages-dev \
+            --query 'LayerVersions[0].LayerVersionArn' \
+            --output text \
+            --region eu-west-2)
+          echo "LATEST_LAYER_VERSION_ARN=$LATEST_LAYER_VERSION_ARN" >> $GITHUB_ENV
+          echo "SECRETS_EXTENSION_ARN=arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:12" >> $GITHUB_ENV
+      - name: Update Batch Notification Processor lambda function configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-batch-notification-processor-dev \
+            --region eu-west-2 \
+            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
+      - name: Update Message Status Handler lambda function update-function-configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-message-status-handler-dev \
+            --region eu-west-2 \
+            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
+      - name: Update Healthcheck lambda function update-function-configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-healthcheck-dev \
+            --region eu-west-2 \
+            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
+      - name: Update Callback Simulator lambda function update-function-configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-callback-simulator-dev \
+            --region eu-west-2 \
+            --layers ${{ env.LATEST_LAYER_VERSION_ARN }} ${{ env.SECRETS_EXTENSION_ARN }}
