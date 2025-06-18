@@ -41,7 +41,7 @@ def lambda_handler(_event, _context):
 
     logging.info("Healthcheck lambda check #4: Make request to NHS Notify API")
     response = requests.get(
-        f"{os.getenv('NOTIFY_API_BASE_URL')}/comms/v1/messages/2WL3qFTEFM0qMY8xjRbt1LIKCzM",
+        f"{os.getenv('NOTIFY_API_BASE_URL')}/comms/v1/messages/2ygbXdWtsfDXhZ6D7DNU42RK3Ty",
         headers={"Accept": "application/vnd.api+json", "Authorization": f"Bearer {token}"},
         timeout=20
     )
