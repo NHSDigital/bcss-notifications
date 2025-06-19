@@ -1,5 +1,8 @@
 name: "Detect dependencies update"
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
