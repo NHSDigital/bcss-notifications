@@ -1,6 +1,11 @@
-name: Deploy BCSS Notify Lambdas
+name: "Deploy BCSS Notify Lambdas"
 
 on:
+  workflow_run:
+    workflows: ["Test stage"]
+    branches: [main]
+    types:
+      - completed
   workflow_dispatch:
     inputs:
       environment:
@@ -9,19 +14,11 @@ on:
         default: 'dev'
         options:
           - dev
-  push:
-    paths:
-      - "batch_notification_processor/**"
-      - "message_status_handler/**"
-      - "healthcheck/**"
-      - "callback_simulator/**"
-      - "shared/**"
-    branches: [main]
-
 jobs:
   deploy-bcss-notify-lambdas:
     name: "Deploy BCSS Notify lambdas"
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} || ${{ github.event_name == 'workflow_dispatch' }}
     permissions:
       id-token: write
       contents: read

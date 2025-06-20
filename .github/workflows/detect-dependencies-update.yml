@@ -1,0 +1,20 @@
+name: "Detect dependencies update"
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "pyproject.toml"
+      - "poetry.lock"
+
+jobs:
+  detect-dependencies-update:
+    name: "Detect dependencies update"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Set env var to denote dependencies update"
+        run: echo "DEPENDENCIES_UPDATED=true" >> $GITHUB_ENV

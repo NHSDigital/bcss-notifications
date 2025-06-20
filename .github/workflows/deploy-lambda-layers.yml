@@ -1,6 +1,11 @@
 name: Deploy BCSS Notify Lambda layers
 
 on:
+  workflow_run:
+    workflows: ["Deploy BCSS Notify Lambdas"]
+    branches: [main]
+    types:
+      - completed
   workflow_dispatch:
     inputs:
       environment:
@@ -9,16 +14,11 @@ on:
         default: 'dev'
         options:
           - dev
-  push:
-    paths:
-      - "pyproject.toml"
-      - "poetry.lock"
-    branches: [main]
-
 jobs:
   deploy-bcss-notify-lambdas:
     name: "Deploy BCSS Notify lambda layers"
     runs-on: ubuntu-latest
+    if: (${{ github.event.workflow_run.conclusion == 'success' }} && ${{ env.DEPENDENCIES_UPDATED == 'true' }}) || ${{ github.event_name == 'workflow_dispatch' }}
     permissions:
       id-token: write
       contents: read
