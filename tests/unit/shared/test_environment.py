@@ -30,6 +30,7 @@ def mock_secrets_response():
             "database_sid": "test_database_sid",
             "database_user": "test_database_user",
             "notify_api_base_url": "test_notify_api_base_url",
+            "notify_api_key": "test_notify_api_key",
             "oauth_api_key": "test_oauth_api_key",
             "oauth_api_kid": "test_oauth_api_kid",
             "oauth_token_url": "test_oauth_token_url",
