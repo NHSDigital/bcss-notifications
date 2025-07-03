@@ -5,7 +5,7 @@
 export AWS_REGION="eu-west-2"
 
 db_instance_identifier="bcss-oracle-bcss-bcss-18000"
-db_snapshot_identifier="bcss-18000-snapshot-with-notify-messaging-test-data"
+db_snapshot_identifier="bcss-18000-snapshot-with-notify-messaging-test-data-arthur"
 option_group_name="bcss-oracle-bcss-dev-option-grp"
 db_instance_class="db.t3.small"
 db_subnet_group_name="bcss-oracle-bcss-cloud-subnet-grp"
