@@ -28,16 +28,17 @@ def test_message_status_handler_updates_message_status(recipient_data, helpers):
             }
         ]
     }
+    body_str = json.dumps(request_body)
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        "x-hmac-sha256-signature": create_digest(signature_secret(), json.dumps(request_body, sort_keys=True)),
+        "x-hmac-sha256-signature": create_digest(signature_secret(), body_str),
         "x-api-key": notify_api_key(),
     }
 
     lambda_function.lambda_handler({
         "headers": headers,
-        "body": json.dumps(request_body)
+        "body": body_str
     }, {})
 
     with helpers.cursor() as cur:

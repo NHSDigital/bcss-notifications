@@ -6,6 +6,7 @@ import request_verifier
 from aws_lambda_typing.events import S3Event
 from aws_lambda_typing.context import Context
 
+
 def lambda_handler(event: S3Event, _context: Context) -> dict:
     logging.info("Message status handler lambda has started. Event: %s", event)
     environment.seed()
@@ -16,7 +17,7 @@ def lambda_handler(event: S3Event, _context: Context) -> dict:
         body = event.get("body", "")
         json_body = json.loads(body)
 
-        if request_verifier.verify_request(headers, json_body):
+        if request_verifier.verify_request(headers, body):
             logging.info("Callback request verification successful.")
             bcss_response_codes = message_status_recorder.record_message_statuses(json_body)
             logging.info("Message statuses recorded successfully. Response codes: %s", bcss_response_codes)

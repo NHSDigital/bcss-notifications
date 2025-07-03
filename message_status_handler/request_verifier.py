@@ -8,7 +8,7 @@ API_KEY_HEADER_NAME = 'x-api-key'
 SIGNATURE_HEADER_NAME = 'x-hmac-sha256-signature'
 
 
-def verify_request(headers: dict, body: dict) -> bool:
+def verify_request(headers: dict, body: str) -> bool:
     is_valid, error_message = verify_headers(headers)
     if not is_valid:
         logging.warning("Header verification failed: %s", error_message)
@@ -18,7 +18,7 @@ def verify_request(headers: dict, body: dict) -> bool:
         logging.warning("Signature verification failed")
         return False
 
-    if not verify_body(body):
+    if not verify_body(json.loads(body)):
         return False
 
     return True
@@ -38,11 +38,10 @@ def verify_headers(headers: dict) -> tuple[bool, str]:
     return True, ""
 
 
-def verify_signature(headers: dict, body: dict) -> bool:
+def verify_signature(headers: dict, body: str) -> bool:
     lc_headers = header_keys_to_lower(headers)
-    body_str = json.dumps(body, sort_keys=True)
 
-    expected_signature = create_digest(signature_secret(), body_str)
+    expected_signature = create_digest(signature_secret(), body)
 
     return hmac.compare_digest(
         expected_signature,
