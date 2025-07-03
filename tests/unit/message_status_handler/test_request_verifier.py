@@ -14,15 +14,15 @@ def setup(monkeypatch):
 def test_verify_signature_invalid():
     """Test that an invalid signature fails verification."""
     headers = {request_verifier.SIGNATURE_HEADER_NAME: 'signature'}
-    body = {'data': [{'body': 'valid'}]}
+    body = json.dumps({'data': [{'body': 'valid'}]})
 
     assert not request_verifier.verify_signature(headers, body)
 
 
 def test_verify_signature_valid():
     """Test that a valid signature passes verification."""
-    body = {'data': [{'body': 'valid'}]}
-    signature = request_verifier.create_digest('application_id.api_key', json.dumps(body))
+    body = json.dumps({'data': [{'body': 'valid'}]})
+    signature = request_verifier.create_digest('application_id.api_key', body)
 
     headers = {request_verifier.SIGNATURE_HEADER_NAME: signature}
     assert request_verifier.verify_signature(headers, body)
@@ -100,4 +100,4 @@ def test_verify_request_for_valid_request():
 
     body = {'data': [{'type': 'ChannelStatus', 'attributes': {'channel': 'nhsapp', 'supplierStatus': 'read'}}]}
 
-    assert request_verifier.verify_request(headers, body) is True
+    assert request_verifier.verify_request(headers, json.dumps(body)) is True
