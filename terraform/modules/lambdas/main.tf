@@ -195,7 +195,7 @@ resource "aws_lambda_function" "callback_simulator" {
       MESSAGE_STATUS_HANDLER_LAMBDA_URL = aws_lambda_function_url.message_status_handler_url.function_url
 
       PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED = "true"
-      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "debug"
+      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "info"
     }
   }
 
