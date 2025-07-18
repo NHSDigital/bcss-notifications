@@ -53,7 +53,7 @@ dotenv = "^0.9.9"
 pytest-mock = "^3.14.1"
 jsonschema = "^4.24.0"
 pylint = "^3.3.7"
-pact-python = "^2.3.1"
+pact-python = "^2.3.3"
 
 [tool.poetry.dependencies]
 python = ">=3.13,<4.0"
