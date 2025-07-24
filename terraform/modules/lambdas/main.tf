@@ -39,7 +39,6 @@ resource "aws_lambda_function" "batch_notification_processor" {
 
   environment {
     variables = {
-      DATABASE_PORT       = local.secrets["database_port"]
       ENVIRONMENT         = var.environment
       NOTIFY_API_BASE_URL = local.secrets["notify_api_base_url"]
       OAUTH_TOKEN_URL     = local.secrets["oauth_token_url"]
@@ -50,7 +49,7 @@ resource "aws_lambda_function" "batch_notification_processor" {
       LAMBDA_STATUS_CHECK_ROLE_ARN = var.message_status_handler_lambda_role_arn
 
       PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED = "true"
-      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "debug"
+      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "info"
     }
   }
 
@@ -83,14 +82,13 @@ resource "aws_lambda_function" "message_status_handler" {
 
   environment {
     variables = {
-      DATABASE_PORT       = local.secrets["database_port"]
       ENVIRONMENT         = var.environment
       NOTIFY_API_BASE_URL = local.secrets["notify_api_base_url"]
       REGION_NAME         = var.region
       SECRET_ARN          = var.secrets_arn
 
       PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED = "true"
-      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "debug"
+      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "info"
     }
   }
 
@@ -146,7 +144,6 @@ resource "aws_lambda_function" "healthcheck" {
 
   environment {
     variables = {
-      DATABASE_PORT       = local.secrets["database_port"]
       ENVIRONMENT         = var.environment
       NOTIFY_API_BASE_URL = local.secrets["notify_api_base_url"]
       OAUTH_TOKEN_URL     = local.secrets["oauth_token_url"]
@@ -154,7 +151,7 @@ resource "aws_lambda_function" "healthcheck" {
       SECRET_ARN          = var.secrets_arn
 
       PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED = "true"
-      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "debug"
+      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "info"
     }
   }
 
@@ -187,10 +184,9 @@ resource "aws_lambda_function" "callback_simulator" {
 
   environment {
     variables = {
-      DATABASE_PORT = local.secrets["database_port"]
-      ENVIRONMENT   = var.environment
-      REGION_NAME   = var.region
-      SECRET_ARN    = var.secrets_arn
+      ENVIRONMENT = var.environment
+      REGION_NAME = var.region
+      SECRET_ARN  = var.secrets_arn
 
       MESSAGE_STATUS_HANDLER_LAMBDA_URL = aws_lambda_function_url.message_status_handler_url.function_url
 
