@@ -34,7 +34,8 @@ resource "aws_lambda_function" "batch_notification_processor" {
 
   layers = [
     var.parameters_and_secrets_lambda_extension_arn,
-    var.python_packages_layer_arn
+    var.python_packages_layer_arn,
+    var.oracle_client_libraries_layer_arn
   ]
 
   environment {
@@ -78,7 +79,8 @@ resource "aws_lambda_function" "message_status_handler" {
 
   layers = [
     var.parameters_and_secrets_lambda_extension_arn,
-    var.python_packages_layer_arn
+    var.python_packages_layer_arn,
+    var.oracle_client_libraries_layer_arn
   ]
 
   environment {
@@ -141,7 +143,8 @@ resource "aws_lambda_function" "healthcheck" {
 
   layers = [
     var.parameters_and_secrets_lambda_extension_arn,
-    var.python_packages_layer_arn
+    var.python_packages_layer_arn,
+    var.oracle_client_libraries_layer_arn
   ]
 
   environment {
@@ -182,7 +185,8 @@ resource "aws_lambda_function" "callback_simulator" {
 
   layers = [
     var.parameters_and_secrets_lambda_extension_arn,
-    var.python_packages_layer_arn
+    var.python_packages_layer_arn,
+    var.oracle_client_libraries_layer_arn
   ]
 
   environment {

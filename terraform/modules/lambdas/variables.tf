@@ -50,6 +50,12 @@ variable "parameters_and_secrets_lambda_extension_arn" {
   default     = "arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:12"
 }
 
+variable "oracle_client_libraries_layer_arn" {
+  type        = string
+  description = "ARN for the Oracle client libraries layer"
+  default     = "arn:aws:lambda:eu-west-2:730319765130:layer:bcss-notify-oracleclient:4"
+}
+
 variable "python_packages_layer_arn" {
   type        = string
   description = "ARN for the Python packages layer"
