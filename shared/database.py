@@ -8,6 +8,10 @@ import os
 from oracledb import Cursor, Connection
 
 
+if bool(os.getenv("DB_CLIENT_THICK_MODE")):
+    oracledb.init_oracle_client()
+
+
 class DatabaseError(Exception):
     """Raised when there is an error from the database"""
 

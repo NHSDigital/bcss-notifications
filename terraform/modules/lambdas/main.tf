@@ -39,11 +39,12 @@ resource "aws_lambda_function" "batch_notification_processor" {
 
   environment {
     variables = {
-      ENVIRONMENT         = var.environment
-      NOTIFY_API_BASE_URL = local.secrets["notify_api_base_url"]
-      OAUTH_TOKEN_URL     = local.secrets["oauth_token_url"]
-      REGION_NAME         = var.region
-      SECRET_ARN          = var.secrets_arn
+      DB_CLIENT_THICK_MODE = "true"
+      ENVIRONMENT          = var.environment
+      NOTIFY_API_BASE_URL  = local.secrets["notify_api_base_url"]
+      OAUTH_TOKEN_URL      = local.secrets["oauth_token_url"]
+      REGION_NAME          = var.region
+      SECRET_ARN           = var.secrets_arn
 
       LAMBDA_STATUS_CHECK_ARN      = aws_lambda_function.message_status_handler.arn
       LAMBDA_STATUS_CHECK_ROLE_ARN = var.message_status_handler_lambda_role_arn
@@ -82,10 +83,11 @@ resource "aws_lambda_function" "message_status_handler" {
 
   environment {
     variables = {
-      ENVIRONMENT         = var.environment
-      NOTIFY_API_BASE_URL = local.secrets["notify_api_base_url"]
-      REGION_NAME         = var.region
-      SECRET_ARN          = var.secrets_arn
+      DB_CLIENT_THICK_MODE = "true"
+      ENVIRONMENT          = var.environment
+      NOTIFY_API_BASE_URL  = local.secrets["notify_api_base_url"]
+      REGION_NAME          = var.region
+      SECRET_ARN           = var.secrets_arn
 
       PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED = "true"
       PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "info"
@@ -144,11 +146,12 @@ resource "aws_lambda_function" "healthcheck" {
 
   environment {
     variables = {
-      ENVIRONMENT         = var.environment
-      NOTIFY_API_BASE_URL = local.secrets["notify_api_base_url"]
-      OAUTH_TOKEN_URL     = local.secrets["oauth_token_url"]
-      REGION_NAME         = var.region
-      SECRET_ARN          = var.secrets_arn
+      DB_CLIENT_THICK_MODE = "true"
+      ENVIRONMENT          = var.environment
+      NOTIFY_API_BASE_URL  = local.secrets["notify_api_base_url"]
+      OAUTH_TOKEN_URL      = local.secrets["oauth_token_url"]
+      REGION_NAME          = var.region
+      SECRET_ARN           = var.secrets_arn
 
       PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED = "true"
       PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL     = "info"
@@ -184,9 +187,10 @@ resource "aws_lambda_function" "callback_simulator" {
 
   environment {
     variables = {
-      ENVIRONMENT = var.environment
-      REGION_NAME = var.region
-      SECRET_ARN  = var.secrets_arn
+      DB_CLIENT_THICK_MODE = "true"
+      ENVIRONMENT          = var.environment
+      REGION_NAME          = var.region
+      SECRET_ARN           = var.secrets_arn
 
       MESSAGE_STATUS_HANDLER_LAMBDA_URL = aws_lambda_function_url.message_status_handler_url.function_url
 
