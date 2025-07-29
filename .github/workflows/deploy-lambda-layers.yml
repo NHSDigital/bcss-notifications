@@ -66,7 +66,8 @@ jobs:
             --layer-name bcss-comms-python-packages-dev \
             --query 'LayerVersions[0].LayerVersionArn' \
             --output text \
-            --region eu-west-2)
+            --region eu-west-2 \
+            | head -n 1)
           echo "LATEST_LAYER_VERSION_ARN=$LATEST_LAYER_VERSION_ARN" >> $GITHUB_ENV
           echo "ORACLE_CLIENT_LAYER_ARN=arn:aws:lambda:eu-west-2:730319765130:layer:bcss-notify-oracleclient:4" >> $GITHUB_ENV
           echo "SECRETS_EXTENSION_ARN=arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:12" >> $GITHUB_ENV
