@@ -53,7 +53,7 @@ variable "parameters_and_secrets_lambda_extension_arn" {
 variable "oracle_client_libraries_layer_arn" {
   type        = string
   description = "ARN for the Oracle client libraries layer"
-  default     = "arn:aws:lambda:eu-west-2:730319765130:layer:bcss-notify-oracleclient:4"
+  default     = "arn:aws:lambda:eu-west-2:730319765130:layer:bcss-comms-oracleclient:2"
 }
 
 variable "python_packages_layer_arn" {
