@@ -70,6 +70,7 @@ module "iam" {
 }
 
 module "network" {
-  source = "./modules/network"
+  source          = "./modules/network"
+  selected_vpc_id = var.selected_vpc_id
 }
 

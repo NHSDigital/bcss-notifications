@@ -28,6 +28,10 @@ variable "secrets_arn" {
   default = "arn:aws:secretsmanager:eu-west-2:123456789012:secret:bcss-nonprod-secrets-123456"
 }
 
+variable "selected_vpc_id" {
+  type = string
+}
+
 variable "tags" {
   type = map(string)
   default = {
