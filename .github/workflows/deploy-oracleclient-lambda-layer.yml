@@ -1,13 +1,6 @@
 name: Deploy BCSS Notify Lambda layers
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "pyproject.toml"
-      - "poetry.lock"
-
   workflow_dispatch:
     inputs:
       environment:
@@ -17,8 +10,8 @@ on:
         options:
           - dev
 jobs:
-  deploy-bcss-notify-lambda-layers:
-    name: "Deploy BCSS Notify lambda layers"
+  deploy-bcss-notify-oracleclient-lambda-layer:
+    name: "Deploy BCSS Notify Oracle Client lambda layer"
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -38,25 +31,21 @@ jobs:
           python-version: '3.13' 
       - name: Install zip tool
         uses: montudor/action-zip@v1
-      - name: Create zip file for packages layer
+      - name: Fetch Oracle client libraries
         run: |
-          pip install poetry
-          pip install poetry-plugin-export
-          mkdir -p python
-          poetry env use system
-          poetry export --without-hashes --format=requirements.txt > requirements.txt
-          poetry run pip install -r requirements.txt --target python/
-          cd python
-          find -name "tests" -type d | xargs rm -rf
-          find -name "__pycache__" -type d | xargs rm -rf
-          find -name "_pytest" -type d | xargs rm -rf
-          cd ..
-          zip -r layer.zip python/
+          curl --output oracli.zip "https://download.oracle.com/otn_software/linux/instantclient/2118000/instantclient-basiclite-linux.x64-21.18.0.0.0dbru.zip"
+      - name: Create Oracle client archive
+        run: |
+          mkdir python
+          mkdir lib
+          unzip -j oracli.zip -d lib
+          cp shared/libaio.so.1 lib/
+          zip -y -r oracleclient.zip python/ lib/
       - name: Publish layer to AWS
         run: |
           aws lambda publish-layer-version \
-            --layer-name bcss-comms-python-packages-dev \
-            --zip-file fileb://layer.zip \
+            --layer-name bcss-comms-oracleclient \
+            --zip-file fileb://oracleclient.zip \
             --compatible-runtimes python3.13 \
             --region eu-west-2
       - name: Get latest layer version ARNs for BCSS Notify Lambdas
