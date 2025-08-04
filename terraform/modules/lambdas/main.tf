@@ -103,7 +103,7 @@ resource "aws_lambda_function_url" "message_status_handler_url" {
   function_name      = aws_lambda_function.message_status_handler.function_name
   authorization_type = "NONE"
   cors {
-    allow_origins = ["https://int.api.service.nhs.uk"]
+    allow_origins = ["https://int.api.service.nhs.uk", "https://api.service.nhs.uk"]
     allow_methods = ["POST"]
   }
 }
