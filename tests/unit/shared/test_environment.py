@@ -16,6 +16,9 @@ def clean_env():
         if key in os.environ:
             del os.environ[key]
 
+    if os.getenv("ENVIRONMENT_SEEDED"):
+        del os.environ["ENVIRONMENT_SEEDED"]
+
 
 @pytest.fixture
 def mock_secrets_response():
@@ -66,6 +69,25 @@ def test_seed_no_secret_arn(monkeypatch, mock_secrets_response):
             assert os.environ[key] == "test_database_user"
         else:
             assert key not in os.environ
+
+
+def test_seed_with_empty_response(monkeypatch, mock_secrets_response):
+    """Test the seed function when the first response from secrets endpoint is blank"""
+    monkeypatch.setenv("SECRET_ARN", "test_secret_arn")
+
+    url = "http://localhost:2773/secretsmanager/get?secretId=test_secret_arn&versionStage=AWSCURRENT"
+
+    with requests_mock.Mocker() as m:
+        m.get(url, [
+            {"status_code": 400, "text": ""},
+            {"status_code": 200, "text": "not JSON"},
+            {"status_code": 200, "text": mock_secrets_response}
+        ])
+
+        environment.seed()
+
+    for key in environment.KEYS:
+        assert os.environ.get(key) == f"test_{key.lower()}"
 
 
 def test_seed_already_seeded(monkeypatch, mock_secrets_response):
