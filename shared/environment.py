@@ -19,6 +19,7 @@ KEYS = [
   "PRIVATE_KEY"
 ]
 
+
 class FetchSecretsError(BaseException):
     """Custom exception for fetch secrets errors."""
 
@@ -33,8 +34,12 @@ def seed() -> None:
         while not secrets and attempts < 5:
             try:
                 r = requests.get(endpoint, headers=headers, timeout=30)
+                if not r.ok:
+                    attempts += 1
+                    continue
+
                 secrets = json.loads(r.text)["SecretString"]
-            except requests.ConnectionError:
+            except (requests.ConnectionError, json.JSONDecodeError, ValueError):
                 attempts += 1
                 time.sleep(attempts * 0.5)
 
