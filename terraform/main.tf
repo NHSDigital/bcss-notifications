@@ -29,6 +29,7 @@ module "lambdas" {
   healthcheck_lambda_role_arn                  = module.iam.healthcheck_lambda_role_arn
   callback_simulator_lambda_role_arn           = module.iam.callback_simulator_lambda_role_arn
   python_packages_layer_arn                    = module.lambda_layer.python_packages_layer_arn
+  oracle_client_libraries_layer_arn            = var.oracle_client_libraries_layer_arn
 }
 
 module "s3" {
