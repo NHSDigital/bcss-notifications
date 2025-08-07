@@ -19,9 +19,9 @@ def lambda_handler(_event: S3Event, _context: Context) -> dict:
     batch_id, routing_plan_id, recipients = batch_processor.next_batch()
     batches = []
 
-    logging.info("Processing next batch. (batch_id: %s, routing_plan_id: %s, recipients: %s)", batch_id, routing_plan_id, recipients)
-
     while routing_plan_id and recipients:
+        logging.info("Processing batch. (batch_id: %s, routing_plan_id: %s, recipients: %s)", batch_id, routing_plan_id, recipients)
+
         response = notify_api.send_batch_message(
             batch_id, routing_plan_id, recipients
         )
@@ -31,7 +31,8 @@ def lambda_handler(_event: S3Event, _context: Context) -> dict:
             batches.append({"batch_id": batch_id, "routing_plan_id": routing_plan_id, "recipients": recipients})
             logging.info("Batch %s sent successfully to %s recipients.", batch_id, len(recipients))
         else:
-            logging.error("Batch %s failed to send. Status code: %s. Response: %s", batch_id, response.status_code, response.text)
+            logging.error("Batch %s failed to send. Status code: %s. Response: %s", 
+                        batch_id, response.status_code, response.text)
 
         batch_id, routing_plan_id, recipients = batch_processor.next_batch()
 
