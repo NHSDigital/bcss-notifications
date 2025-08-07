@@ -5,5 +5,5 @@ output "private_subnet_ids" {
 
 output "security_group" {
   value       = data.aws_security_group.lambda.id
-  description = "List of private subnet IDs"
+  description = "Security Group ID"
 }
