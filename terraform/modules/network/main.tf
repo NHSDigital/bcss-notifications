@@ -1,5 +1,5 @@
 data "aws_vpc" "selected" {
-  id = "vpc-0a409ba281f33e2e3"
+  id = var.selected_vpc_id
 }
 
 data "aws_subnets" "private" {
@@ -16,4 +16,3 @@ data "aws_subnets" "private" {
 data "aws_security_group" "lambda" {
   name = "bcss-notify-lambdas"
 }
-
