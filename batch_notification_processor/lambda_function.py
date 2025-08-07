@@ -18,9 +18,17 @@ def lambda_handler(_event: S3Event, _context: Context) -> dict:
 
     batch_id, routing_plan_id, recipients = batch_processor.next_batch()
     batches = []
+    
+    if not recipients:
+        logging.info("No recipients found for batch %s. Skipping batch.", batch_id)
+        return {
+            "status": "complete",
+            "message": f"No recipients found for batch {batch_id}. Skipping batch."
+        }
 
     while routing_plan_id and recipients:
-        logging.info("Processing batch. (batch_id: %s, routing_plan_id: %s, recipients: %s)", batch_id, routing_plan_id, recipients)
+        logging.info("Processing batch. (batch_id: %s, routing_plan_id: %s, recipients: %s)", 
+                    batch_id, routing_plan_id, recipients)
 
         response = notify_api.send_batch_message(
             batch_id, routing_plan_id, recipients
