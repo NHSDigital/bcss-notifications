@@ -1,0 +1,56 @@
+name: Deploy BCSS Notify Lambda Package Layer
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'preprod'
+        options:
+          - preprod
+          - prod
+jobs:
+  deploy-bcss-notify-lambda-layer:
+    name: "Deploy BCSS Notify lambda layers"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-runner-role
+          aws-region: eu-west-2
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13' 
+      - name: Install zip tool
+        uses: montudor/action-zip@v1
+      - name: Create zip file for packages layer
+        run: |
+          pip install poetry
+          pip install poetry-plugin-export
+          mkdir -p python
+          poetry env use system
+          poetry export --without-hashes --format=requirements.txt > requirements.txt
+          poetry run pip install -r requirements.txt --target python/
+          cd python
+          find -name "tests" -type d | xargs rm -rf
+          find -name "__pycache__" -type d | xargs rm -rf
+          find -name "_pytest" -type d | xargs rm -rf
+          cd ..
+          zip -r layer.zip python/
+      - name: Publish layer to AWS
+        run: |
+          aws lambda publish-layer-version \
+            --layer-name bcss-comms-python-packages-${{ inputs.environment }} \
+            --zip-file fileb://layer.zip \
+            --compatible-runtimes python3.13 \
+            --region eu-west-2
