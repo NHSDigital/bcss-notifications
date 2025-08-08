@@ -1,0 +1,52 @@
+name: Deploy BCSS Notify Oracle Lambda layer
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'preprod'
+        options:
+          - preprod
+          - prod
+jobs:
+  deploy-bcss-notify-oracleclient-lambda-layer:
+    name: "Deploy BCSS Notify Oracle Client lambda layer"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-runner-role
+          aws-region: eu-west-2
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13' 
+      - name: Install zip tool
+        uses: montudor/action-zip@v1
+      - name: Fetch Oracle client libraries
+        run: |
+          curl --output oracli.zip "https://download.oracle.com/otn_software/linux/instantclient/2118000/instantclient-basiclite-linux.x64-21.18.0.0.0dbru.zip"
+      - name: Create Oracle client archive
+        run: |
+          mkdir python
+          mkdir lib
+          unzip -j oracli.zip -d lib
+          cp shared/libaio.so.1 lib/
+          zip -y -r oracleclient.zip python/ lib/
+      - name: Publish layer to AWS
+        run: |
+          aws lambda publish-layer-version \
+            --layer-name bcss-comms-oracleclient-${{ inputs.environment }} \
+            --zip-file fileb://oracleclient.zip \
+            --compatible-runtimes python3.13 \
+            --region eu-west-2

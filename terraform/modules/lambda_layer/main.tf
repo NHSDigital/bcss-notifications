@@ -17,3 +17,9 @@ resource "aws_lambda_layer_version" "python_packages" {
   compatible_runtimes = [local.runtime]
   filename            = "${path.module}/placeholder.zip"
 }
+
+resource "aws_lambda_layer_version" "oracle_client_libraries" {
+  layer_name          = "${var.team}-${var.project}-oracleclient-${var.environment}"
+  compatible_runtimes = [local.runtime]
+  filename            = "${path.module}/placeholder.zip"
+}
