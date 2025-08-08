@@ -17,18 +17,21 @@ def test_lambda_handler(mock_record_message_status, mock_request_verifier):
             "x-hmac-sha256-signature": "test-signature",
             "x-api-key": "test-api-key",
             "x-correlation-id": "test-correlation-id",
-
         },
-        "body": json.dumps({
-            "data": [{
-                "type": "ChannelStatus",
-                "attributes": {
-                    "channel": "nhsapp",
-                    "supplierStatus": "read",
-                    "messageId": "12345"
-                }
-            }]
-        })
+        "body": json.dumps(
+            {
+                "data": [
+                    {
+                        "type": "ChannelStatus",
+                        "attributes": {
+                            "channel": "nhsapp",
+                            "supplierStatus": "read",
+                            "messageId": "12345",
+                        },
+                    }
+                ]
+            }
+        ),
     }
 
     response = lambda_function.lambda_handler(event, None)
@@ -37,9 +40,7 @@ def test_lambda_handler(mock_record_message_status, mock_request_verifier):
     assert json.loads(response["body"]) == {
         "message": "Message status handler lambda finished",
         "event": event,
-        "result": {
-            "bcss_response_codes": [0],
-        }
+        "result": {"bcss_response_codes": {"0": 1, "non_zero": 0}},
     }
 
 
@@ -48,10 +49,7 @@ def test_lambda_handler_invalid_request(mock_request_verifier):
     """Test the lambda_handler function with an invalid request."""
     mock_request_verifier.return_value = False
 
-    event = {
-        "headers": {},
-        "body": json.dumps({})
-    }
+    event = {"headers": {}, "body": json.dumps({})}
 
     response = lambda_function.lambda_handler(event, None)
 
@@ -59,7 +57,7 @@ def test_lambda_handler_invalid_request(mock_request_verifier):
     assert json.loads(response["body"]) == {
         "message": "Message status handler lambda finished",
         "event": event,
-        "result": {}
+        "result": {},
     }
 
 
@@ -68,11 +66,10 @@ def test_lambda_handler_exception(mock_request_verifier):
     """Test the lambda_handler function when an exception occurs."""
     mock_request_verifier.side_effect = Exception("Test exception")
 
-    event = {
-        "headers": {},
-        "body": json.dumps({})
-    }
+    event = {"headers": {}, "body": json.dumps({})}
     response = lambda_function.lambda_handler(event, None)
 
     assert response["status"] == 500
-    assert json.loads(response["body"]) == {"message": "Internal Server Error: Test exception"}
+    assert json.loads(response["body"]) == {
+        "message": "Internal Server Error: Test exception"
+    }

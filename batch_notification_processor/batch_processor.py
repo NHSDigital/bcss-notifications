@@ -4,6 +4,7 @@ import time
 import uuid
 import oracledb
 import oracle_database
+import random
 
 
 def next_batch() -> tuple:
@@ -15,9 +16,11 @@ def next_batch() -> tuple:
     """
     batch_id = generate_batch_id()
     routing_plan_id = get_routing_plan_id(batch_id)
-    recipients = get_recipients(batch_id)
+    recipients = None
 
-    if not routing_plan_id and not recipients:
+    if routing_plan_id:
+        recipients = get_recipients(batch_id)
+    else:
         logging.info("No more remaining batches to process")
 
     return batch_id, routing_plan_id, recipients
@@ -56,5 +59,7 @@ def generate_message_reference() -> str:
 
 
 def generate_reference(prefix="") -> str:
-    str_val = f"{prefix}:{time.time()}"
+    timestamp = time.time_ns()
+    rand_bits = random.getrandbits(64)
+    str_val = f"{prefix}:{timestamp}:{rand_bits}"
     return str(uuid.UUID(hashlib.md5(str_val.encode()).hexdigest()))

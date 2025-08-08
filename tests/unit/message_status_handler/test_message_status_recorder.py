@@ -17,16 +17,25 @@ def test_record_message_statuses(mock_record_message_status):
 
     response_codes = message_status_recorder.record_message_statuses(json_data)
 
-    assert response_codes == [0, 1]
+    assert response_codes == {
+        "0": 1,
+        "non_zero": 1,
+    }
     assert mock_record_message_status.call_count == 2
-    mock_record_message_status.assert_any_call({"attributes": {"messageReference": "message_reference_1"}})
-    mock_record_message_status.assert_any_call({"attributes": {"messageReference": "message_reference_2"}})
+    mock_record_message_status.assert_any_call(
+        {"attributes": {"messageReference": "message_reference_1"}}
+    )
+    mock_record_message_status.assert_any_call(
+        {"attributes": {"messageReference": "message_reference_2"}}
+    )
 
 
 @patch("message_status_recorder.fetch_batch_id_for_message", return_value="batch_id_1")
 @patch("message_status_recorder.update_message_status", return_value=12)
 @patch("database.cursor")
-def test_record_message_status(mock_cursor, mock_update_message_status, mock_fetch_batch_id_for_message):
+def test_record_message_status(
+    mock_cursor, mock_update_message_status, mock_fetch_batch_id_for_message
+):
     """Test the record_message_status calls update_message_status function."""
     json_data = {"attributes": {"messageReference": "message_reference_1"}}
 
@@ -34,7 +43,9 @@ def test_record_message_status(mock_cursor, mock_update_message_status, mock_fet
 
     assert mock_update_message_status.call_count == 1
     assert mock_fetch_batch_id_for_message.call_count == 1
-    mock_update_message_status.assert_any_call(mock_cursor().__enter__(), "batch_id_1", "message_reference_1")
+    mock_update_message_status.assert_any_call(
+        mock_cursor().__enter__(), "batch_id_1", "message_reference_1"
+    )
 
 
 def test_record_message_status_no_message_reference():
@@ -51,7 +62,9 @@ def test_fetch_batch_id_for_message():
     mock_cursor = Mock()
     mock_cursor.fetchone.return_value = ("batch_id_1",)
 
-    response = message_status_recorder.fetch_batch_id_for_message(mock_cursor, "message_reference_1")
+    response = message_status_recorder.fetch_batch_id_for_message(
+        mock_cursor, "message_reference_1"
+    )
 
     assert response == "batch_id_1"
     mock_cursor.execute.assert_called_once_with(
@@ -71,7 +84,9 @@ def test_update_message_status(mock_cursor):
     mock_var = Mock(getvalue=Mock(return_value=12))
     mock_cursor_contextmanager.var.return_value = mock_var
 
-    response_code = message_status_recorder.update_message_status(mock_cursor_contextmanager, "batch_id", "message_reference_1")
+    response_code = message_status_recorder.update_message_status(
+        mock_cursor_contextmanager, "batch_id", "message_reference_1"
+    )
 
     assert mock_cursor_contextmanager.execute.call_count == 1
     assert response_code == 12
