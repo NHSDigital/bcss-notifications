@@ -13,18 +13,14 @@ def next_batch() -> tuple:
     Returns:
         tuple: A tuple containing the batch ID and routing plan ID.
     """
-    try:
-        batch_id = generate_batch_id()
-        routing_plan_id = get_routing_plan_id(batch_id)
-        recipients = None
+    batch_id = generate_batch_id()
+    routing_plan_id = get_routing_plan_id(batch_id)
+    recipients = get_recipients(batch_id)
 
-        if routing_plan_id:
-            recipients = get_recipients(batch_id)
+    if not routing_plan_id and not recipients:
+        logging.info("No more remaining batches to process")
 
-        return batch_id, routing_plan_id, recipients
-    except oracledb.Error as e:
-        logging.error("Error fetching next batch: %s", e)
-        return None, None, None
+    return batch_id, routing_plan_id, recipients
 
 
 def get_routing_plan_id(batch_id: str) -> str | None:
@@ -35,12 +31,9 @@ def get_recipients(batch_id: str) -> list:
     recipients = []
     recipients_results = []
 
-    try:
-        recipients_results = oracle_database.get_recipients(batch_id)
-        if not recipients_results:
-            logging.error("No recipients for batch ID: %s", batch_id)
-    except oracledb.Error as e:
-        logging.error("Error fetching recipients: %s", e)
+    recipients_results = oracle_database.get_recipients(batch_id)  # []
+    if not recipients_results:
+        logging.info("No recipients for batch ID: %s", batch_id)
 
     for recipient in recipients_results:
         recipient = recipient._replace(message_id=generate_message_reference())

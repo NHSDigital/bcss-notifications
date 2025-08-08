@@ -4,18 +4,18 @@ import json
 import logging
 import os
 
-API_KEY_HEADER_NAME = 'x-api-key'
-SIGNATURE_HEADER_NAME = 'x-hmac-sha256-signature'
+API_KEY_HEADER_NAME = "x-api-key"
+SIGNATURE_HEADER_NAME = "x-hmac-sha256-signature"
 
 
 def verify_request(headers: dict, body: str) -> bool:
     is_valid, error_message = verify_headers(headers)
     if not is_valid:
-        logging.warning("Header verification failed: %s", error_message)
+        logging.error("Header verification failed: %s", error_message)
         return False
 
     if not verify_signature(headers, body):
-        logging.warning("Signature verification failed")
+        logging.error("Signature verification failed")
         return False
 
     if not verify_body(json.loads(body)):
@@ -50,22 +50,22 @@ def verify_signature(headers: dict, body: str) -> bool:
 
 
 def verify_body(body: dict) -> bool:
-    data = body.get('data', [{}])
+    data = body.get("data", [{}])
     return all(verify_data(d) for d in data)
 
 
 def verify_data(data: dict) -> bool:
-    if data.get('type') == 'ChannelStatus':
-        attributes = data.get('attributes', {})
+    if data.get("type") == "ChannelStatus":
+        attributes = data.get("attributes", {})
         return (
-            attributes.get('channel') == 'nhsapp' and
-            attributes.get('supplierStatus') == 'read'
+            attributes.get("channel") == "nhsapp"
+            and attributes.get("supplierStatus") == "read"
         )
     return False
 
 
 def notify_api_key() -> str | None:
-    return os.getenv('NOTIFY_API_KEY')
+    return os.getenv("NOTIFY_API_KEY")
 
 
 def signature_secret() -> str:
@@ -78,7 +78,5 @@ def header_keys_to_lower(headers: dict) -> dict:
 
 def create_digest(secret: str, message: str) -> str:
     return hmac.new(
-        bytes(secret, 'ASCII'),
-        msg=bytes(message, 'ASCII'),
-        digestmod=hashlib.sha256
+        bytes(secret, "ASCII"), msg=bytes(message, "ASCII"), digestmod=hashlib.sha256
     ).hexdigest()

@@ -18,10 +18,13 @@ def lambda_handler(event: S3Event, _context: Context) -> dict:
         json_body = json.loads(body)
 
         if request_verifier.verify_request(headers, body):
-            logging.info("Callback request verification successful.")
-            bcss_response_codes = message_status_recorder.record_message_statuses(json_body)
-            logging.info("Message statuses recorded successfully. Response codes: %s", bcss_response_codes)
-            result = {"bcss_response_codes": bcss_response_codes}
+            response_counts = message_status_recorder.record_message_statuses(json_body)
+            logging.info(
+                "Processed message statuses: %d successes (0), %d failures (non-zero)",
+                response_counts["0"],
+                response_counts["non_zero"],
+            )
+            result = {"bcss_response_codes": response_counts}
 
         return {
             "status": 200,
@@ -29,7 +32,7 @@ def lambda_handler(event: S3Event, _context: Context) -> dict:
                 {
                     "message": "Message status handler lambda finished",
                     "event": event,
-                    "result": result
+                    "result": result,
                 }
             ),
         }
