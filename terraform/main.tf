@@ -75,3 +75,30 @@ module "network" {
   selected_vpc_id = var.selected_vpc_id
 }
 
+module "slack_notifier" {
+  source      = "./modules/slack_notifier"
+  team        = var.team
+  project     = var.project
+  environment = var.environment
+  tags        = var.tags
+
+  slack_webhook_url              = var.slack_webhook_url
+  slack_notifier_lambda_role_arn = module.iam.slack_notifier_lambda_role_arn
+}
+
+module "cloudwatch_alarms" {
+  source      = "./modules/cloudwatch_alarms"
+  team        = var.team
+  project     = var.project
+  environment = var.environment
+  tags        = var.tags
+
+  lambda_functions = {
+    "batch-notification-processor" = module.lambdas.batch_notification_processor_name
+    "message-status-handler"       = module.lambdas.message_status_handler_name
+    "slack-notifier"               = module.slack_notifier.slack_notifier_lambda_name
+  }
+
+  lambda_alerts_sns_topic_arn = module.slack_notifier.lambda_alerts_sns_topic_arn
+}
+

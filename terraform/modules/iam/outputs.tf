@@ -13,3 +13,7 @@ output "healthcheck_lambda_role_arn" {
 output "callback_simulator_lambda_role_arn" {
   value = aws_iam_role.callback_simulator_lambda_role.arn
 }
+
+output "slack_notifier_lambda_role_arn" {
+  value = aws_iam_role.slack_notifier_lambda_role.arn
+}

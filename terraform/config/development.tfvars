@@ -13,3 +13,6 @@ tags = {
   "Service" = "bcss"
 }
 
+# Slack webhook URL for Lambda failure notifications
+slack_webhook_url = "https://hooks.slack.com/services/YOUR_WEBHOOK_URL_HERE"
+

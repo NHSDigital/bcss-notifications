@@ -43,3 +43,9 @@ variable "tags" {
   }
   description = "A map of tags to apply to the resource."
 }
+
+variable "slack_webhook_url" {
+  type        = string
+  description = "Slack webhook URL for sending Lambda failure notifications"
+  sensitive   = true
+}
