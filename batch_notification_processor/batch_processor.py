@@ -2,7 +2,6 @@ import logging
 import hashlib
 import time
 import uuid
-import oracledb
 import oracle_database
 import random
 
