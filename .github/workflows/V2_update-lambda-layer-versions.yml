@@ -1,0 +1,71 @@
+name: Update Notify Lambda Layer Versions
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'preprod'
+        options:
+          - preprod
+          - prod
+jobs:
+  update-notify-lambda-layer-versions:
+    name: "Deploy BCSS Notify lambda layers"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-runner-role
+          aws-region: eu-west-2
+      - name: Get latest layer version ARNs for BCSS Notify Lambdas
+        id: get_latest_layer_version_arn
+        run: |
+          LATEST_LAYER_VERSION_ARN=$(aws lambda list-layer-versions \
+            --layer-name bcss-comms-python-packages-${{ inputs.environment }} \
+            --query 'LayerVersions[0].LayerVersionArn' \
+            --output text \
+            --region eu-west-2 \
+            | head -n 1)
+          ORACLE_CLIENT_LAYER_ARN=$(aws lambda list-layer-versions \
+            --layer-name bcss-comms-oracleclient-${{ inputs.environment }} \
+            --query 'LayerVersions[0].LayerVersionArn' \
+            --output text \
+            --region eu-west-2 \
+            | head -n 1)
+          echo "LATEST_LAYER_VERSION_ARN=$LATEST_LAYER_VERSION_ARN" >> $GITHUB_OUTPUT
+          echo "ORACLE_CLIENT_LAYER_ARN=$ORACLE_CLIENT_LAYER_ARN" >> $GITHUB_OUTPUT
+          echo "SECRETS_EXTENSION_ARN=arn:aws:lambda:eu-west-2:133256977650:layer:AWS-Parameters-and-Secrets-Lambda-Extension:12" >> $GITHUB_OUTPUT
+      - name: Update Batch Notification Processor lambda function configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:bcss-comms-batch-notification-processor-${{ inputs.environment }} \
+            --region eu-west-2 \
+            --layers ${{ steps.get_latest_layer_version_arn.outputs.LATEST_LAYER_VERSION_ARN }} ${{ steps.get_latest_layer_version_arn.outputs.ORACLE_CLIENT_LAYER_ARN }} ${{ steps.get_latest_layer_version_arn.outputs.SECRETS_EXTENSION_ARN }}
+      - name: Update Message Status Handler lambda function update-function-configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:bcss-comms-message-status-handler-${{ inputs.environment }} \
+            --region eu-west-2 \
+            --layers ${{ steps.get_latest_layer_version_arn.outputs.LATEST_LAYER_VERSION_ARN }} ${{ steps.get_latest_layer_version_arn.outputs.ORACLE_CLIENT_LAYER_ARN }} ${{ steps.get_latest_layer_version_arn.outputs.SECRETS_EXTENSION_ARN }}
+      - name: Update Healthcheck lambda function update-function-configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:bcss-comms-healthcheck-${{ inputs.environment }} \
+            --region eu-west-2 \
+            --layers ${{ steps.get_latest_layer_version_arn.outputs.LATEST_LAYER_VERSION_ARN }} ${{ steps.get_latest_layer_version_arn.outputs.ORACLE_CLIENT_LAYER_ARN }} ${{ steps.get_latest_layer_version_arn.outputs.SECRETS_EXTENSION_ARN }}
+      - name: Update Callback Simulator lambda function update-function-configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:bcss-comms-callback-simulator-${{ inputs.environment }} \
+            --region eu-west-2 \
+            --layers ${{ steps.get_latest_layer_version_arn.outputs.LATEST_LAYER_VERSION_ARN }} ${{ steps.get_latest_layer_version_arn.outputs.ORACLE_CLIENT_LAYER_ARN }} ${{ steps.get_latest_layer_version_arn.outputs.SECRETS_EXTENSION_ARN }}
