@@ -33,7 +33,7 @@ def get_recipients(batch_id: str) -> list:
     recipients = []
     recipients_results = []
 
-    recipients_results = oracle_database.get_recipients(batch_id)  # []
+    recipients_results = oracle_database.get_recipients(batch_id)
     if not recipients_results:
         logging.info("No recipients for batch ID: %s", batch_id)
 

@@ -4,12 +4,12 @@ import logging
 
 
 def record_message_statuses(json_data: dict) -> dict[str, int]:
-    response_counts = {"0": 0, "non_zero": 0}
+    response_counts = {"zero": 0, "non_zero": 0}
 
     for data in json_data.get("data", []):
         response_code = record_message_status(data)
         if response_code == 0:
-            response_counts["0"] += 1
+            response_counts["zero"] += 1
         else:
             response_counts["non_zero"] += 1
 

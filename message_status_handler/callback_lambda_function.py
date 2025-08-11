@@ -21,7 +21,7 @@ def lambda_handler(event: S3Event, _context: Context) -> dict:
             response_counts = message_status_recorder.record_message_statuses(json_body)
             logging.info(
                 "Processed message statuses: %d successes (0), %d failures (non-zero)",
-                response_counts["0"],
+                response_counts["zero"],
                 response_counts["non_zero"],
             )
             result = {"bcss_response_codes": response_counts}

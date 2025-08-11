@@ -18,7 +18,7 @@ def test_record_message_statuses(mock_record_message_status):
     response_codes = message_status_recorder.record_message_statuses(json_data)
 
     assert response_codes == {
-        "0": 1,
+        "zero": 1,
         "non_zero": 1,
     }
     assert mock_record_message_status.call_count == 2

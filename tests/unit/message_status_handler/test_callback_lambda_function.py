@@ -40,7 +40,7 @@ def test_lambda_handler(mock_record_message_status, mock_request_verifier):
     assert json.loads(response["body"]) == {
         "message": "Message status handler lambda finished",
         "event": event,
-        "result": {"bcss_response_codes": {"0": 1, "non_zero": 0}},
+        "result": {"bcss_response_codes": {"zero": 1, "non_zero": 0}},
     }
 
 
