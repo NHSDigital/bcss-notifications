@@ -66,6 +66,7 @@ def mark_batch_as_sent(batch_id: str) -> int | None:
                 e,
             )
             cursor.connection.rollback()
+            return None
 
 
 def update_message_id(recipient: Recipient) -> None:
