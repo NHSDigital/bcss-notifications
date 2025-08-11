@@ -31,6 +31,9 @@ def get_recipients(batch_id: str) -> list[Recipient]:
                 """
                 SELECT nhs_number,
                        message_id,
+                       batch_id,
+                       routing_plan_id,
+                       message_status,
                        address_line_1,
                        address_line_2,
                        address_line_3,
