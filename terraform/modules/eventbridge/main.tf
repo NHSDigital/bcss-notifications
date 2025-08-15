@@ -2,16 +2,16 @@
 resource "aws_cloudwatch_event_rule" "batch_notification_processor_8am_schedule" {
   name                = "batch-notification-processor-8am-schedule-${var.environment}"
   description         = "Schedule for batch notification processor lambda at 08:00"
-  schedule_expression = "cron(0 8 * * ? *)"
-  is_enabled          = false
+  schedule_expression = "cron(0 8 * * ? * TZ=Europe/London)"
+  state               = "DISABLED"
 }
 
 # Schedule to trigger the Batch Notification Processor Lambda at 9:00 every day
 resource "aws_cloudwatch_event_rule" "batch_notification_processor_9am_schedule" {
   name                = "batch-notification-processor-9am-schedule-${var.environment}"
   description         = "Schedule for batch notification processor lambda at 09:00"
-  schedule_expression = "cron(0 9 * * ? *)"
-  is_enabled          = false
+  schedule_expression = "cron(0 9 * * ? * TZ=Europe/London)"
+  state               = "DISABLED"
 }
 
 resource "aws_cloudwatch_event_target" "batch_notification_processor_8am_event_target" {
