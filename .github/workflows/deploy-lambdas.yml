@@ -1,23 +1,20 @@
 name: "Deploy BCSS Notify Lambdas"
 
 on:
-  workflow_run:
-    workflows: ["Test stage"]
-    branches: [main]
-    types:
-      - completed
   workflow_dispatch:
     inputs:
       environment:
         description: 'Environment to deploy to'
         required: true
-        default: 'dev'
+        default: 'preprod'
         options:
-          - dev
+          - preprod
+          - prod
 jobs:
   deploy-bcss-notify-lambdas:
     name: "Deploy BCSS Notify lambdas"
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     if: ${{ github.event.workflow_run.conclusion == 'success' }} || ${{ github.event_name == 'workflow_dispatch' }}
     permissions:
       id-token: write
@@ -29,7 +26,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::730319765130:role/bcss-github-actions-lambda-access
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-runner-role
           aws-region: eu-west-2
       - name: Install python
         uses: actions/setup-python@v5
@@ -42,7 +39,7 @@ jobs:
       - name: Update Batch Notification Processor lambda function code
         run: |
           aws lambda update-function-code \
-            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-batch-notification-processor-dev \
+            --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:bcss-comms-batch-notification-processor-${{ inputs.environment }} \
             --zip-file fileb://batch_notification_processor/code.zip \
             --region eu-west-2
       - name: Create zip file for Message Status Handler function
@@ -50,7 +47,7 @@ jobs:
       - name: Update Message Status Handler lambda function code
         run: |
           aws lambda update-function-code \
-            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-message-status-handler-dev \
+            --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:bcss-comms-message-status-handler-${{ inputs.environment }} \
             --zip-file fileb://message_status_handler/code.zip \
             --region eu-west-2
       - name: Create zip file for Healthcheck function
@@ -58,7 +55,7 @@ jobs:
       - name: Update Healthcheck lambda function code
         run: |
           aws lambda update-function-code \
-            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-healthcheck-dev \
+            --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:bcss-comms-healthcheck-${{ inputs.environment }} \
             --zip-file fileb://healthcheck/code.zip \
             --region eu-west-2
       - name: Create zip file for Callback Simulator function
@@ -66,6 +63,6 @@ jobs:
       - name: Update Callback Simulator lambda function code
         run: |
           aws lambda update-function-code \
-            --function-name arn:aws:lambda:eu-west-2:730319765130:function:bcss-comms-callback-simulator-dev \
+            --function-name arn:aws:lambda:eu-west-2:${{ secrets.AWS_ACCOUNT_ID }}:function:bcss-comms-callback-simulator-${{ inputs.environment }} \
             --zip-file fileb://callback_simulator/code.zip \
             --region eu-west-2
