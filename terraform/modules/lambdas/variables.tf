@@ -80,3 +80,8 @@ variable "security_group" {
   description = "Id for security group"
 }
 
+variable "sns_topic_arn" {
+  type        = string
+  description = "ARN for the SNS topic used for CloudWatch alarm notifications"
+}
+

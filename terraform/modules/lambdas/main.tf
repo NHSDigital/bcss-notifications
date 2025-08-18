@@ -223,7 +223,7 @@ resource "aws_cloudwatch_metric_alarm" "message_status_handler_errors" {
     FunctionName = aws_lambda_function.message_status_handler.function_name
   }
 
-  alarm_actions = [module.sns.topic_arn]
+  alarm_actions = [var.sns_topic_arn]
 
   tags = var.tags
 }

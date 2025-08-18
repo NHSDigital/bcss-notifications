@@ -25,6 +25,7 @@ module "lambdas" {
   environment = var.environment
   region      = var.region
   tags        = var.tags
+  sns_topic_arn = module.sns.topic_arn
 
   subnet_ids     = module.network.private_subnet_ids
   security_group = module.network.security_group
