@@ -21,6 +21,12 @@ resource "aws_iam_role" "chatbot" {
       Action    = "sts:AssumeRole"
     }]
   })
+}
+
+resource "aws_iam_role_policy" "chatbot_policy" {
+  name = "chatbot-slack-policy"
+  role = aws_iam_role.chatbot.id
+
   policy = jsonencode({
     "Version": "2012-10-17",
     "Statement": [
