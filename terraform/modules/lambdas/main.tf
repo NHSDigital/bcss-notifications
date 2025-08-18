@@ -227,3 +227,26 @@ resource "aws_cloudwatch_metric_alarm" "message_status_handler_errors" {
 
   tags = var.tags
 }
+
+
+# CloudWatch Alarm for batch_notification_processor Lambda errors
+resource "aws_cloudwatch_metric_alarm" "batch_notification_processor_errors" {
+  alarm_name          = "${var.team}-${var.project}-batch-notification-processor-errors-${var.environment}"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = 300
+  statistic           = "Average"
+  threshold           = 0
+  alarm_description   = "This metric monitors batch_notification_processor Lambda function errors"
+  treat_missing_data  = "missing"
+
+  dimensions = {
+    FunctionName = aws_lambda_function.batch_notification_processor.function_name
+  }
+
+  alarm_actions = [var.sns_topic_arn]
+
+  tags = var.tags
+}

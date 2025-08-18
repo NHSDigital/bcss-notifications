@@ -61,4 +61,9 @@ resource "aws_chatbot_slack_channel_configuration" "alerts" {
   ]
 
   logging_level = "ERROR"
+
+  # Guardrail policy to limit to read-only access
+  guardrail_policies = [
+    "arn:aws:iam::aws:policy/ReadOnlyAccess"
+  ]
 }
