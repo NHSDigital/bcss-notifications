@@ -205,3 +205,25 @@ resource "aws_lambda_function" "callback_simulator" {
 
   tags = var.tags
 }
+
+# CloudWatch Alarm for message_status_handler Lambda errors
+resource "aws_cloudwatch_metric_alarm" "message_status_handler_errors" {
+  alarm_name          = "${var.team}-${var.project}-message-status-handler-errors-${var.environment}"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = 300
+  statistic           = "Average"
+  threshold           = 0
+  alarm_description   = "This metric monitors message_status_handler Lambda function errors"
+  treat_missing_data  = "missing"
+
+  dimensions = {
+    FunctionName = aws_lambda_function.message_status_handler.function_name
+  }
+
+  alarm_actions = [module.sns.topic_arn]
+
+  tags = var.tags
+}
