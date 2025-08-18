@@ -4,13 +4,6 @@ resource "aws_sns_topic" "error_notifications" {
   tags = var.tags
 }
 
-# SNS Subscription to Amazon Q chatbot
-resource "aws_sns_topic_subscription" "amazon_q_chatbot" {
-  topic_arn = aws_sns_topic.error_notifications.arn
-  protocol  = "https"
-  endpoint  = "global.sns-api.chatbot.amazonaws.com"
-}
-
 resource "aws_iam_role" "chatbot" {
   name = "chatbot-slack-role"
   assume_role_policy = jsonencode({
