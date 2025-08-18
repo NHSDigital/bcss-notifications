@@ -10,6 +10,14 @@ module "lambda_layer" {
   region      = var.region
 }
 
+module "sns" {
+  source      = "./modules/sns" 
+  environment = var.environment
+  tags        = var.tags
+  slack_team_id = var.slack_team_id
+  slack_channel_id = var.slack_channel_id
+}
+
 module "lambdas" {
   source      = "./modules/lambdas"
   team        = var.team
@@ -17,6 +25,7 @@ module "lambdas" {
   environment = var.environment
   region      = var.region
   tags        = var.tags
+  sns_topic_arn = module.sns.topic_arn
 
   subnet_ids     = module.network.private_subnet_ids
   security_group = module.network.security_group

@@ -31,6 +31,10 @@ env:
   TF_BUCKET: bcss-${{ inputs.environment }}-terraform-state-store
   TF_KEY: communication-management/terraform.tfstate
 
+  # Slack team and channel IDs for error notifications
+  TF_VAR_slack_team_id: ${{ secrets.SLACK_TEAM_ID }}
+  TF_VAR_slack_channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
+
 jobs:
   terraform-action:
     runs-on: ubuntu-latest
