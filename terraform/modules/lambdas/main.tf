@@ -17,10 +17,10 @@ resource "aws_lambda_function" "batch_notification_processor" {
   filename      = data.archive_file.placeholder_zip.output_path
   function_name = "${var.team}-${var.project}-batch-notification-processor-${var.environment}"
   handler       = "lambda_function.lambda_handler"
-  memory_size   = 128
+  memory_size   = 512
   role          = var.batch_notification_processor_lambda_role_arn
   runtime       = local.runtime
-  timeout       = 300
+  timeout       = 900
 
   logging_config {
     application_log_level = "INFO"
