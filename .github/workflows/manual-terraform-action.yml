@@ -52,7 +52,7 @@ jobs:
           terraform_version: 1.12.2
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@ececac1a45f3b08a01d2dd070d28d111c5fe6722 # v4.1
+        uses: aws-actions/configure-aws-credentials@f2e9d495b03c8294c97f731a3419cc72a206d05a # v4.1
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-runner-role
