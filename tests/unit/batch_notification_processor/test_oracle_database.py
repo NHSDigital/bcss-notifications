@@ -81,21 +81,6 @@ def test_get_recipients(mock_database):
 
 
 @patch("oracle_database.database", autospec=True)
-def test_update_message_id(mock_database):
-    recipient = Recipient("1111111111", "message_reference_1")
-
-    mock_cursor = mock_database.cursor().__enter__()
-
-    oracle_database.update_message_id(recipient)
-
-    mock_cursor.execute.assert_called_with(
-        "UPDATE v_notify_message_queue SET message_id = :message_id WHERE nhs_number = :nhs_number",
-        {"message_id": recipient.message_id, "nhs_number": recipient.nhs_number},
-    )
-    mock_cursor.connection.commit.assert_called_once()
-
-
-@patch("oracle_database.database", autospec=True)
 def test_mark_batch_as_sent(mock_database):
     batch_id = "1234"
 

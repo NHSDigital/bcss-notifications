@@ -69,9 +69,13 @@ def test_fetch_batch_id_for_message():
     assert response == "batch_id_1"
     mock_cursor.execute.assert_called_once_with(
         (
-            "SELECT batch_id FROM v_notify_message_queue "
-            "WHERE message_id = :message_reference "
-            "AND message_status = 'sending'"
+            "SELECT nmq.batch_id FROM v_notify_message_queue nmq "
+            "WHERE nmq.message_id = :message_reference "
+            "AND nmq.message_status = 'sending' "
+            "UNION "
+            "SELECT nmr.batch_id FROM v_notify_message_record nmr "
+            "WHERE nmr.message_id = :message_reference "
+            "AND nmr.message_status = 'not read'"
         ),
         {"message_reference": "message_reference_1"},
     )

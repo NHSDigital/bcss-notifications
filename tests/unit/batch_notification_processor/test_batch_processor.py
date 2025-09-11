@@ -19,8 +19,8 @@ def plan_id():
 @pytest.fixture
 def recipients():
     return [
-        Recipient("0000000000", None, None, None, "requested"),
-        Recipient("1111111111", None, None, None, "requested"),
+        Recipient("0000000000", "message_reference_0", None, None, "requested"),
+        Recipient("1111111111", "message_reference_1", None, None, "requested"),
     ]
 
 
@@ -31,21 +31,13 @@ def test_next_batch(mock_oracle_database, recipients, batch_id, plan_id):
     with patch("batch_processor.generate_batch_id") as mock_generate_batch_id:
         mock_generate_batch_id.return_value = batch_id
 
-        with patch("batch_processor.generate_message_reference") as mock_generate_message_reference:
-            mock_generate_message_reference.side_effect = ["message_reference_0", "message_reference_1"]
+        result = batch_processor.next_batch()
 
-            result = batch_processor.next_batch()
-
-    recipients_with_message_ids = [
-        recipients[0]._replace(message_id="message_reference_0"),
-        recipients[1]._replace(message_id="message_reference_1"),
-    ]
-
-    assert result == (batch_id, plan_id, recipients_with_message_ids)
+    # Recipients are returned as-is, without message_id updates
+    assert result == (batch_id, plan_id, recipients)
     assert mock_oracle_database.get_routing_plan_id.call_count == 1
     assert mock_oracle_database.get_recipients.call_count == 1
     assert mock_generate_batch_id.call_count == 1
-    assert mock_generate_message_reference.call_count == 2
 
 
 @patch("batch_processor.oracle_database")
@@ -65,10 +57,8 @@ def test_next_batch_no_plan_id(mock_oracle_database, batch_id):
 @patch("batch_processor.oracle_database")
 def test_get_recipients(mock_oracle_database, recipients, batch_id):
     mock_oracle_database.get_recipients.return_value = recipients
-    with patch("batch_processor.generate_message_reference") as mock_generate_message_reference:
-        mock_generate_message_reference.side_effect = ["message_reference_0", "message_reference_1"]
 
-        recipients = batch_processor.get_recipients(batch_id)
+    recipients = batch_processor.get_recipients(batch_id)
 
     assert len(recipients) == 2
 
@@ -119,13 +109,3 @@ def test_mark_batch_as_sent(mock_oracle_database, batch_id):
     batch_processor.mark_batch_as_sent(batch_id)
 
     mock_mark_batch_as_sent.assert_called_once_with(batch_id)
-
-
-def test_generate_message_reference():
-    message_reference = batch_processor.generate_message_reference()
-
-    assert isinstance(message_reference, str)
-    assert len(message_reference) == 36
-    assert re.match(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", message_reference)
-    for _ in range(100):
-        assert message_reference != batch_processor.generate_message_reference()
