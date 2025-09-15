@@ -31,8 +31,9 @@ def test_batch_processor_and_message_status_handler_lambdas(helpers, recipient_d
         )
         results = cursor.fetchall()
         assert len(results) == len(recipient_data), "Not all messages were marked as read"
+        nhs_numbers = [nhs_number for nhs_number, _ in recipient_data]
         for result in results:
-            assert result[0] in recipient_data, "NHS number not found in recipient data"
+            assert result[0] in nhs_numbers, "NHS number not found in recipient data"
 
 
 def trigger_batch_notification_processor_lambda():
@@ -41,12 +42,13 @@ def trigger_batch_notification_processor_lambda():
 
 
 def send_all_status_callbacks(cursor, recipient_data):
+    nhs_numbers = tuple(nhs_number for nhs_number, _ in recipient_data)
     cursor.execute(
         (
             "SELECT message_id "
             "FROM v_notify_message_queue "
-            "WHERE message_status = 'sending'"
-            "AND nhs_number IN {}".format(tuple(recipient_data))
+            "WHERE message_status = 'sending' "
+            "AND nhs_number IN {}".format(nhs_numbers)
         )
     )
     results = cursor.fetchall()

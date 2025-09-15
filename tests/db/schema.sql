@@ -208,3 +208,32 @@ INSERT INTO MPI_NOTIFY_USER.notify_message_definition (message_definition_id, ro
 
 
 COMMIT;
+
+-- 1. Remove trailing comma in column list
+-- 2. Use CREATE TABLE for a table, not a view (don't use v_ prefix for tables)
+-- 3. Use schema prefix only if needed (here, it's fine for clarity)
+
+CREATE TABLE MPI_NOTIFY_USER.notify_message_record (
+  message_id     VARCHAR2 (38) NOT NULL,
+  batch_id       VARCHAR2 (38) NOT NULL,
+  message_status VARCHAR2 (25) -- Add this column to match your code expectations
+)
+RESULT_CACHE (MODE DEFAULT)
+TABLESPACE MPI_NOTIFY_USER
+NOCOMPRESS;
+
+COMMIT;
+
+-- Insert sample data with real UUIDs and a status
+INSERT INTO MPI_NOTIFY_USER.notify_message_record (message_id, batch_id, message_status)
+  VALUES ('e5aeb4f8-666a-cd74-0883-1caea4c3f39f', '949f180d-b7a0-14a4-a4ad-62c792c14e46', 'not read');
+INSERT INTO MPI_NOTIFY_USER.notify_message_record (message_id, batch_id, message_status)
+  VALUES ('966ecc3a-1e6b-5006-1ba6-f5457f496351', 'a9a92820-d538-51cd-a31d-a57d082e8c73', 'not read');
+
+COMMIT;
+
+-- Update the view to include message_status
+CREATE OR REPLACE VIEW MPI_NOTIFY_USER.v_notify_message_record AS
+SELECT message_id, batch_id, message_status FROM MPI_NOTIFY_USER.notify_message_record;
+
+COMMIT;
