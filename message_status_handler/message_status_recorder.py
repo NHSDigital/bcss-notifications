@@ -59,7 +59,6 @@ def fetch_batch_id_for_message(cursor: Cursor, message_reference: str) -> str | 
             "SELECT nmr.batch_id "
             "FROM v_notify_message_record nmr "
             "WHERE nmr.message_id = :message_reference "
-            "AND nmr.message_status = 'not read'"
         ),
         {"message_reference": message_reference},
     )
