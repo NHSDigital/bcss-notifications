@@ -1,4 +1,5 @@
 from unittest.mock import Mock, patch
+import pytest
 
 import message_status_recorder
 
@@ -39,7 +40,8 @@ def test_record_message_status(
     """Test the record_message_status calls update_message_status function."""
     json_data = {"attributes": {"messageReference": "message_reference_1"}}
 
-    message_status_recorder.record_message_status(json_data)
+    with pytest.raises(message_status_recorder.MessageUpdateError):
+        message_status_recorder.record_message_status(json_data)
 
     assert mock_update_message_status.call_count == 1
     assert mock_fetch_batch_id_for_message.call_count == 1

@@ -2,6 +2,8 @@ import database
 from oracledb import Cursor
 import logging
 
+from exceptions import MessageDoesNotExistError, MessageUpdateError
+
 
 def record_message_statuses(json_data: dict) -> dict[str, int]:
     response_counts = {"zero": 0, "non_zero": 0}
@@ -27,6 +29,9 @@ def record_message_status(json_data: dict) -> int:
                 logging.error(
                     "Message %s not found, either queued or archived", message_reference
                 )
+                raise MessageDoesNotExistError(
+                    f"Message {message_reference} does not exist"
+                )
             else:
                 batch_id = fetch_batch_id_for_message(cursor, message_reference)
                 if batch_id is not None:
@@ -44,6 +49,7 @@ def record_message_status(json_data: dict) -> int:
             message_reference,
             response_code,
         )
+        raise MessageUpdateError(f"Error updating message {message_reference} status")
 
     return response_code
 

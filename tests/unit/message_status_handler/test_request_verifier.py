@@ -84,7 +84,8 @@ def test_verify_request_invalid_headers():
     headers = {request_verifier.API_KEY_HEADER_NAME: 'invalid_api_key'}
     body = {'data': [{'type': 'ChannelStatus', 'attributes': {'channel': 'nhsapp', 'supplierStatus': 'read'}}]}
 
-    assert not request_verifier.verify_request(headers, body)
+    with pytest.raises(request_verifier.HeaderVerificationError):
+        request_verifier.verify_request(headers, json.dumps(body))
 
 
 def test_verify_request_for_valid_request():

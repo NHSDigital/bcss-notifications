@@ -4,6 +4,12 @@ import json
 import logging
 import os
 
+from exceptions import (
+    HeaderVerificationError,
+    SignatureVerificationError,
+    SignatureVerificationError,
+)
+
 API_KEY_HEADER_NAME = "x-api-key"
 SIGNATURE_HEADER_NAME = "x-hmac-sha256-signature"
 
@@ -12,14 +18,15 @@ def verify_request(headers: dict, body: str) -> bool:
     is_valid, error_message = verify_headers(headers)
     if not is_valid:
         logging.error("Header verification failed: %s", error_message)
-        return False
+        raise HeaderVerificationError(error_message)
 
     if not verify_signature(headers, body):
         logging.error("Signature verification failed")
-        return False
+        raise SignatureVerificationError("Signature verification failed")
 
     if not verify_body(json.loads(body)):
-        return False
+        logging.error("Body verification failed")
+        raise SignatureVerificationError("Body verification failed")
 
     return True
 
