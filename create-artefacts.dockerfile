@@ -1,5 +1,5 @@
 # Stage 1: Build stage
-FROM --platform=linux/amd64 python:3.13 AS builder
+FROM --platform=linux/amd64 python:3.14 AS builder
 
 ENV PIPENV_VENV_IN_PROJECT=1
 WORKDIR /tmp/project/app
