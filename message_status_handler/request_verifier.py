@@ -25,8 +25,7 @@ def verify_request(headers: dict, body: str) -> bool:
         raise SignatureVerificationError("Signature verification failed")
 
     if not verify_body(json.loads(body)):
-        logging.error("Body verification failed")
-        raise BodyVerificationError("Body verification failed")
+        return False
 
     return True
 
