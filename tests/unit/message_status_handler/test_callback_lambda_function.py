@@ -1,4 +1,5 @@
 import json
+import pytest
 import callback_lambda_function as lambda_function
 from unittest.mock import patch
 
@@ -67,9 +68,6 @@ def test_lambda_handler_exception(mock_request_verifier):
     mock_request_verifier.side_effect = Exception("Test exception")
 
     event = {"headers": {}, "body": json.dumps({})}
-    response = lambda_function.lambda_handler(event, None)
-
-    assert response["status"] == 500
-    assert json.loads(response["body"]) == {
-        "message": "Internal Server Error: Test exception"
-    }
+    with pytest.raises(Exception) as exc_info:
+        lambda_function.lambda_handler(event, None)
+    assert str(exc_info.value) == "Test exception"

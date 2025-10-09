@@ -38,7 +38,5 @@ def lambda_handler(event: S3Event, _context: Context) -> dict:
         }
 
     except Exception as e:
-        return {
-            "status": 500,
-            "body": json.dumps({"message": f"Internal Server Error: {e}"}),
-        }
+        logging.error("Unhandled exception: %s", e, exc_info=True)
+        raise

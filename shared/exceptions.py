@@ -21,6 +21,10 @@ class SignatureVerificationError(AppError):
     """Raised when signature verification fails."""
 
 
+class BodyVerificationError(AppError):
+    """Raised when body verification fails."""
+
+
 class MessageDoesNotExistError(AppError):
     """Raised when a message does not exist in the database."""
 

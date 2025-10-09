@@ -7,7 +7,7 @@ import os
 from exceptions import (
     HeaderVerificationError,
     SignatureVerificationError,
-    SignatureVerificationError,
+    BodyVerificationError,
 )
 
 API_KEY_HEADER_NAME = "x-api-key"
@@ -26,7 +26,7 @@ def verify_request(headers: dict, body: str) -> bool:
 
     if not verify_body(json.loads(body)):
         logging.error("Body verification failed")
-        raise SignatureVerificationError("Body verification failed")
+        raise BodyVerificationError("Body verification failed")
 
     return True
 
