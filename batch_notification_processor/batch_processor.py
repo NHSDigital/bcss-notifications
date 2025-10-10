@@ -36,8 +36,8 @@ def get_recipients(batch_id: str) -> list:
     return recipients
 
 
-def mark_batch_as_sent(batch_id: str) -> None:
-    oracle_database.mark_batch_as_sent(batch_id)
+def mark_batch_as_sent(batch_id: str) -> int | None:
+    return oracle_database.mark_batch_as_sent(batch_id)
 
 
 def generate_batch_id() -> str:

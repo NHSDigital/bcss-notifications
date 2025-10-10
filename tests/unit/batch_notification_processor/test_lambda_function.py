@@ -15,22 +15,23 @@ def test_lambda_handler(mock_batch_processor, mock_notify_api):
     routing_plan_id_1 = "c2c2c2c2-c2c2-c2c2c2c2-c2c2c2c2c2c2"
     batch_id_2 = "d4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4"
 
-    mock_batch_processor.next_batch = Mock(side_effect=[
-        (batch_id_1, routing_plan_id_1, recipients),
-        (batch_id_2, None, None),
-    ])
+    mock_batch_processor.next_batch = Mock(
+        side_effect=[
+            (batch_id_1, routing_plan_id_1, recipients),
+            (batch_id_2, None, None),
+        ]
+    )
 
     mock_response = Mock()
     mock_response.status_code = 201
     mock_notify_api.send_batch_message = Mock(return_value=mock_response)
+    mock_batch_processor.mark_batch_as_sent.return_value = 0
 
     lambda_function.lambda_handler({}, {})
 
     assert mock_batch_processor.next_batch.call_count == 2
 
     mock_notify_api.send_batch_message.assert_called_once_with(
-        batch_id_1,
-        routing_plan_id_1,
-        recipients
+        batch_id_1, routing_plan_id_1, recipients
     )
     mock_batch_processor.mark_batch_as_sent.assert_called_once_with(batch_id_1)
