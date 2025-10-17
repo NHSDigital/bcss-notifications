@@ -7,7 +7,6 @@ import os
 from exceptions import (
     HeaderVerificationError,
     SignatureVerificationError,
-    BodyVerificationError,
 )
 
 API_KEY_HEADER_NAME = "x-api-key"

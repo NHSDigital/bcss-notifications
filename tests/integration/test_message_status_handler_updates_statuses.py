@@ -1,7 +1,9 @@
 import dotenv
 import json
 import uuid
+import pytest
 
+from exceptions import SignatureVerificationError
 from request_verifier import create_digest, notify_api_key, signature_secret
 
 dotenv.load_dotenv(".env.test")
@@ -23,8 +25,8 @@ def test_message_status_handler_updates_message_status(recipient_data, helpers):
                 "attributes": {
                     "channel": "nhsapp",
                     "supplierStatus": "read",
-                    "messageReference": message_references[0]
-                }
+                    "messageReference": message_references[0],
+                },
             }
         ]
     }
@@ -36,15 +38,12 @@ def test_message_status_handler_updates_message_status(recipient_data, helpers):
         "x-api-key": notify_api_key(),
     }
 
-    lambda_function.lambda_handler({
-        "headers": headers,
-        "body": body_str
-    }, {})
+    lambda_function.lambda_handler({"headers": headers, "body": body_str}, {})
 
     with helpers.cursor() as cur:
         cur.execute(
             "SELECT message_id FROM v_notify_message_queue WHERE batch_id = :batch_id AND message_status = 'read'",
-            batch_id=batch_id
+            batch_id=batch_id,
         )
         results = cur.fetchall()
 
@@ -61,27 +60,28 @@ def test_message_status_handler_invalid_request(helpers):
                 "attributes": {
                     "channel": "nhsapp",
                     "supplierStatus": "read",
-                    "messageId": "invalid-message-id"
-                }
+                    "messageId": "invalid-message-id",
+                },
             }
         ]
     }
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        "x-hmac-sha256-signature": create_digest(signature_secret(), json.dumps(request_body, sort_keys=True)),
+        "x-hmac-sha256-signature": create_digest(
+            signature_secret(), json.dumps(request_body, sort_keys=True)
+        ),
         "x-api-key": notify_api_key(),
     }
 
-    lambda_function.lambda_handler({
-        "headers": headers,
-        "body": json.dumps(request_body)
-    }, {})
+    with pytest.raises(SignatureVerificationError):
+        lambda_function.lambda_handler(
+            {"headers": headers, "body": json.dumps(request_body)}, {}
+        )
 
     with helpers.cursor() as cur:
         cur.execute(
             "SELECT COUNT(*) FROM v_notify_message_queue WHERE message_status = 'read'"
         )
         count = cur.fetchone()[0]
-
     assert count == 0
