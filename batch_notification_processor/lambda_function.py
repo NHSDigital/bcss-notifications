@@ -31,7 +31,14 @@ def lambda_handler(_event: S3Event, _context: Context) -> dict:
         response = notify_api.send_batch_message(batch_id, routing_plan_id, recipients)
 
         if response.status_code == 201:
-            batch_processor.mark_batch_as_sent(batch_id)
+
+            result = batch_processor.mark_batch_as_sent(batch_id)
+
+            if result is not None and result > 0:
+                logging.error(
+                    "Failed to mark batch %s as sent. Result code: %s", batch_id, result
+                )
+
             batches.append(batch_id)
             logging.info(
                 "Batch %s sent successfully to %s recipients.",

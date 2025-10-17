@@ -70,29 +70,3 @@ def mark_batch_as_sent(batch_id: str) -> int | None:
             )
             cursor.connection.rollback()
             return None
-
-
-def update_message_id(recipient: Recipient) -> None:
-    with database.cursor() as cursor:
-        try:
-            cursor.execute(
-                (
-                    "UPDATE v_notify_message_queue "
-                    "SET message_id = :message_id "
-                    "WHERE nhs_number = :nhs_number"
-                ),
-                {
-                    "message_id": recipient.message_id,
-                    "nhs_number": recipient.nhs_number,
-                },
-            )
-            cursor.connection.commit()
-        except oracledb.Error as e:
-            logging.error("Error updating recipient: %s", e)
-            logging.error(
-                "Error updating recipient %s with message ID %s: %s",
-                recipient.nhs_number,
-                recipient.message_id,
-                e,
-            )
-            cursor.rollback()

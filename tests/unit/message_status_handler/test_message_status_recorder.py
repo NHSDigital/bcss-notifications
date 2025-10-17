@@ -1,4 +1,5 @@
 from unittest.mock import Mock, patch
+import pytest
 
 import message_status_recorder
 
@@ -39,7 +40,8 @@ def test_record_message_status(
     """Test the record_message_status calls update_message_status function."""
     json_data = {"attributes": {"messageReference": "message_reference_1"}}
 
-    message_status_recorder.record_message_status(json_data)
+    with pytest.raises(message_status_recorder.MessageUpdateError):
+        message_status_recorder.record_message_status(json_data)
 
     assert mock_update_message_status.call_count == 1
     assert mock_fetch_batch_id_for_message.call_count == 1
@@ -69,9 +71,12 @@ def test_fetch_batch_id_for_message():
     assert response == "batch_id_1"
     mock_cursor.execute.assert_called_once_with(
         (
-            "SELECT batch_id FROM v_notify_message_queue "
-            "WHERE message_id = :message_reference "
-            "AND message_status = 'sending'"
+            "SELECT nmq.batch_id FROM v_notify_message_queue nmq "
+            "WHERE nmq.message_id = :message_reference "
+            "AND nmq.message_status = 'sending' "
+            "UNION "
+            "SELECT nmr.batch_id FROM v_notify_message_record nmr "
+            "WHERE nmr.message_id = :message_reference "
         ),
         {"message_reference": "message_reference_1"},
     )

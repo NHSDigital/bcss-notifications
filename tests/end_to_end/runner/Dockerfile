@@ -20,6 +20,7 @@ COPY --from=root_dir pyproject.toml /
 COPY --from=root_dir poetry.lock /
 COPY --from=root_dir .env.test /.env
 COPY --from=root_dir message_status_handler/request_verifier.py /tests/end_to_end/request_verifier.py
+COPY --from=root_dir shared/exceptions.py /tests/end_to_end/exceptions.py
 COPY . /tests/end_to_end
 
 RUN pip install poetry

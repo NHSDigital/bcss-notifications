@@ -2,6 +2,8 @@ import database
 from oracledb import Cursor
 import logging
 
+from exceptions import MessageDoesNotExistError, MessageUpdateError
+
 
 def record_message_statuses(json_data: dict) -> dict[str, int]:
     response_counts = {"zero": 0, "non_zero": 0}
@@ -22,13 +24,24 @@ def record_message_status(json_data: dict) -> int:
 
     if message_reference is not None:
         with database.cursor() as cursor:
+            message_id = check_message_exists(cursor, message_reference)
+            if message_id is None:
+                logging.error(
+                    "Message %s not found, either queued or archived", message_reference
+                )
+                raise MessageDoesNotExistError(
+                    f"Message {message_reference} does not exist"
+                )
+
             batch_id = fetch_batch_id_for_message(cursor, message_reference)
             if batch_id is not None:
                 response_code = update_message_status(
                     cursor, batch_id, message_reference
                 )
             else:
-                logging.error("Cannot update status of message %s", message_reference)
+                logging.warning(
+                    "Cannot update status of message %s", message_reference
+                )
 
     if response_code > 0:
         logging.error(
@@ -36,6 +49,7 @@ def record_message_status(json_data: dict) -> int:
             message_reference,
             response_code,
         )
+        raise MessageUpdateError(f"Error updating message {message_reference} status")
 
     return response_code
 
@@ -43,14 +57,35 @@ def record_message_status(json_data: dict) -> int:
 def fetch_batch_id_for_message(cursor: Cursor, message_reference: str) -> str | None:
     cursor.execute(
         (
-            "SELECT batch_id FROM v_notify_message_queue "
-            "WHERE message_id = :message_reference "
-            "AND message_status = 'sending'"
+            "SELECT nmq.batch_id "
+            "FROM v_notify_message_queue nmq "
+            "WHERE nmq.message_id = :message_reference "
+            "AND nmq.message_status = 'sending' "
+            "UNION "
+            "SELECT nmr.batch_id "
+            "FROM v_notify_message_record nmr "
+            "WHERE nmr.message_id = :message_reference "
         ),
         {"message_reference": message_reference},
     )
     result = cursor.fetchone()
+    return result[0] if result else None
 
+
+def check_message_exists(cursor: Cursor, message_reference: str) -> str | None:
+    cursor.execute(
+        (
+            "SELECT nmq.message_id "
+            "FROM v_notify_message_queue nmq "
+            "WHERE nmq.message_id = :message_reference "
+            "UNION "
+            "SELECT nmr.message_id "
+            "FROM v_notify_message_record nmr "
+            "WHERE nmr.message_id = :message_reference"
+        ),
+        {"message_reference": message_reference},
+    )
+    result = cursor.fetchone()
     return result[0] if result else None
 
 
