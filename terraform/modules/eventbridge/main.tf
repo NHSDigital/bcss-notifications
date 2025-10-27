@@ -2,7 +2,7 @@
 resource "aws_cloudwatch_event_rule" "batch_notification_processor_8am_schedule" {
   name                = "batch-notification-processor-8am-schedule-${var.environment}"
   description         = "Schedule for batch notification processor lambda at 08:00"
-  schedule_expression = "cron(0 7 * * ? *)"
+  schedule_expression = "cron(0 8 * * ? *)"
   state               = "DISABLED"
 }
 
@@ -10,7 +10,7 @@ resource "aws_cloudwatch_event_rule" "batch_notification_processor_8am_schedule"
 resource "aws_cloudwatch_event_rule" "batch_notification_processor_9am_schedule" {
   name                = "batch-notification-processor-9am-schedule-${var.environment}"
   description         = "Schedule for batch notification processor lambda at 09:00"
-  schedule_expression = "cron(0 8 * * ? *)"
+  schedule_expression = "cron(0 9 * * ? *)"
   state               = "DISABLED"
 }
 
