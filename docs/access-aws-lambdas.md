@@ -16,7 +16,7 @@ To access AWS Lambda functions, follow the steps below:
 
    ![AWS Account List](images/aws-accounts.png)
 
-3. When working in development, you should use the **NHS England BCSS Pre-Prod** account and log in as the **bcss-rw-user**.
+3. When working in development, you should use the **NHS England BCSS Pre-Prod** account.
 
 4. Once your AWS Console has loaded, **change the region to `eu-west-2` (London)** using the region selector in the top-right corner of the Console.
 
