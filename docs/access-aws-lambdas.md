@@ -7,16 +7,16 @@ To access AWS Lambda functions, follow the steps below:
    This will take you to the AWS Start Portal, where you can view the AWS accounts you have been granted access to.
 
 2. Look for the following AWS accounts in the list:
-   - **NHS Digital DDC Exeter Texas Mgmt**
-   - **NHS Digital DDC Exeter Texas NonProd K8s**
-   - **NHS Digital DDC Exeter Texas Prod K8s**
+   - **NHS England BCSS Dev**
+   - **NHS England BCSS Pre-Prod**
+   - **NHS England BCSS Prod**
 
 
    *If you do not see these accounts listed, please contact the Texas Platform team for access.*
 
    ![AWS Account List](images/aws-accounts.png)
 
-3. When working in development, you should use the **NHS Digital DDC Exeter Texas NonProd K8s** account and log in as the **bcss-rw-user**.
+3. When working in development, you should use the **NHS England BCSS Pre-Prod** account.
 
 4. Once your AWS Console has loaded, **change the region to `eu-west-2` (London)** using the region selector in the top-right corner of the Console.
 
@@ -35,7 +35,8 @@ To access AWS Lambda functions, follow the steps below:
 
 8. Use the search bar on this page to find the specific Lambda function you are working on.  
    Currently, our Lambda functions are named:
-
-   - bcss-s3-to-lambda-trigger
-   - bcss_notify_callback
-   - bcss-lambda-s3-oracle
+   
+   - bcss-comms-batch-notification-processor-[preprod/prod]
+   - bcss-comms-callback-simulator-[preprod/prod]
+   - bcss-comms-message-status-handler-[preprod/prod]
+   - bcss-comms-healthcheck-[preprod/prod]
